@@ -35,15 +35,17 @@ var TabBar = React.createClass({
     });
   },
   render: function() {
-    var selectedViews = [];
-    var itemViews = [];
+    let selectedViews = [];
+    let itemViews = [];
     React.Children.forEach(this.props.children, (view) => {
-      var textStyles = [styles.itemText, this.getItemStyle().text];
-      var imageStyles = [styles.itemIcon, this.getItemStyle().icon];
+      let textStyles = [styles.itemText, this.getItemStyle().text];
+      let imageStyles = [styles.itemIcon, this.getItemStyle().icon];
+      let icon = view.props.icon;
       if (!this.props.currentTab || view.props.name === this.props.currentTab) {
         selectedViews.push(view.props.children);
         textStyles = [styles.itemText, this.getSelectedItemStyle().text];
         imageStyles = [styles.itemIcon, this.getSelectedItemStyle().icon];
+        icon = view.props.selectedIcon || view.props.icon;
       }
 
       itemViews.push(
@@ -55,7 +57,7 @@ var TabBar = React.createClass({
           <View style={styles.item}>
             <Image
               style={imageStyles}
-              source={{uri: view.props.icon, scale: 1}} />
+              source={{uri: icon, scale: 1}} />
             <Text style={textStyles}>{view.props.display || view.props.name}</Text>
           </View>
         </TouchableHighlight>

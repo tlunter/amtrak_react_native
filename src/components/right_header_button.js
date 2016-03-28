@@ -28,10 +28,11 @@ const styles = StyleSheet.create({
   right: {
     position: 'absolute',
     right: 0,
+    padding: 4,
   },
   image: {
-    height: 46,
-    width: 46,
+    height: 38,
+    width: 38,
     tintColor: '#ffffff',
   },
 });

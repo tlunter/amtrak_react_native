@@ -8,6 +8,7 @@
   "dependencies": {
     "axios": "^0.7.0",
     "react-native": "^0.21.0",
-    "react-timer-mixin": "^0.13.3"
+    "react-timer-mixin": "^0.13.3",
+    "react-native-viewpager": "^0.2.1"
   }
 }

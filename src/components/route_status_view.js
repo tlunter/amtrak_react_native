@@ -1,51 +1,91 @@
-import axios from 'axios';
-import React, { StyleSheet, Text, View, ListView } from 'react-native';
+'use strict';
+
+import Network from '../network';
+import React, { ListView, RefreshControl, StyleSheet, Text, View } from 'react-native';
 import TimerMixin from 'react-timer-mixin';
-import containerStyles from '../styles/container.js';
+import containerStyles from '../styles/container';
 const { container, fullWidth } = containerStyles;
 
-var RouteStatusView = React.createClass({
+const RouteStatusHeaderView = React.createClass({
+  render() {
+    const route = this.props.route;
+    return (
+      <View style={styles.train}>
+        <Text style={styles.trainHeader}>{route.from}    ➢    {route.to}</Text>
+      </View>
+    );
+  }
+});
+
+
+const RouteStatusView = React.createClass({
   mixins: [TimerMixin],
-  getInitialState: function() {
-    var ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
-    return { dataSource: ds };
+  getInitialState() {
+    var ds = new ListView.DataSource({
+      rowHasChanged: (r1, r2) => r1 !== r2
+    });
+    return { dataSource: ds, refreshing: false };
   },
-  componentDidMount: function() {
+  componentDidMount() {
     this.load();
     this.setInterval(this.load, 30000);
   },
-  load: async function() {
-    const route = this.props.route;
-    const response = await axios.get(`http://amtrak.tlunter.com/${route.from}/${route.to}.json`);
-    this.setState({ dataSource: this.state.dataSource.cloneWithRows(response.data) });
+  load: function() {
+    this.setState({ refreshing: true }, () => {
+      const route = this.props.route;
+      Network.get(`http://amtrak.tlunter.com/${route.from}/${route.to}.json`)
+        .then((response) => {
+          this.setState({
+            dataSource: this.state.dataSource.cloneWithRows(response.data),
+            refreshing: false,
+          });
+        });
+    });
   },
-  renderTrain: function(train) {
+  renderTrain(train) {
     const preferredTrain = this.props.route.options.preferredTrain;
     return (
-      <View>
-        <View style={[styles.train, preferredTrain && train.number === preferredTrain && styles.highlightedTrain]}>
-          <Text style={styles.trainNumber}>{train.number}</Text>
-          <Text style={styles.trainScheduled}>{train.departure && train.departure.scheduled_time}</Text>
-          <Text style={styles.trainEstimated}>{train.departure && train.departure.estimated_time}</Text>
-        </View>
+      <View style={[styles.train, preferredTrain && train.number === preferredTrain && styles.highlightedTrain]}>
+        <Text style={styles.trainNumber}>{train.number}</Text>
+        <Text style={styles.trainScheduled}>{train.departure && train.departure.scheduled_time}</Text>
+        <Text style={styles.trainEstimated}>{train.departure && train.departure.estimated_time}</Text>
       </View>
     );
   },
-  render: function() {
+  render() {
+    const refreshControl = (
+      <RefreshControl
+        refreshing={this.state.refreshing}
+        onRefresh={this.load}
+        title="Loading..." />
+    );
+
     return (
-      <ListView
-        style={[container, fullWidth]}
-        dataSource={this.state.dataSource}
-        renderRow={this.renderTrain}
-        automaticallyAdjustContentInsets={false} />
+      <View style={[container, styles.whiteBackground]}>
+        <View><RouteStatusHeaderView route={this.props.route} /></View>
+        <ListView
+          style={[container, fullWidth]}
+          dataSource={this.state.dataSource}
+          renderRow={this.renderTrain}
+          refreshControl={refreshControl} />
+      </View>
     );
   }
 });
 
 var styles = StyleSheet.create({
+  whiteBackground: {
+    backgroundColor: '#ffffff',
+  },
   train: {
     flex: 1,
     flexDirection: 'row',
+  },
+  trainHeader: {
+    flex: 1,
+    fontSize: 24,
+    textAlign: 'center',
+    fontWeight: 'bold',
   },
   highlightedTrain: {
     flex: 1,
@@ -54,17 +94,17 @@ var styles = StyleSheet.create({
   },
   trainNumber: {
     flex: 1,
-    margin: 10,
+    padding: 10,
     fontSize: 24,
   },
   trainScheduled: {
     flex: 2,
-    margin: 10,
+    padding: 10,
     fontSize: 24,
   },
   trainEstimated: {
     flex: 2,
-    margin: 10,
+    padding: 10,
     fontSize: 24,
   },
 });

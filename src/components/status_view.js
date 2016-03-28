@@ -1,7 +1,7 @@
 'use strict';
 
 import React, { Dimensions, ScrollView, StyleSheet, Text, View, ListView } from 'react-native';
-import TimerMixin from 'react-timer-mixin';
+import ViewPager from 'react-native-viewpager';
 import HeaderView from './header_view.js';
 import RouteStatusView from './route_status_view.js';
 import Route from '../models/routes.js';
@@ -14,30 +14,27 @@ var StatusView = React.createClass({
     this.load();
   },
   getInitialState() {
-    return { routes: [] };
+    return {
+      dataSource: new ViewPager.DataSource({
+        pageHasChanged: (p1, p2) => p1.compileKey() !== p2.compileKey(),
+      })
+    };
   },
   load: async function() {
     const routes = await (Route.all());
-    this.setState({ routes });
+    const dataSource = this.state.dataSource.cloneWithPages(routes);
+    this.setState({ dataSource });
   },
-  onScroll(e) {
-    console.log(e.nativeEvent.contentOffset.x / pageWidth);
+  renderPage(route) {
+    return (<RouteStatusView key={route.compileKey()} route={route} />);
   },
   render() {
-    const routeStatusViews = this.state.routes.map((route) => {
-      return (<RouteStatusView key={route.compileKey()} route={route} />);
-    });
     return (
       <View style={styles.container}>
-        <HeaderView />
-        <ScrollView
-          horizontal={true}
-          pagingEnabled={true}
-          style={styles.container}
-          onScroll={this.onScroll}
-          scrollEventThrottle={1}>
-          {routeStatusViews}
-        </ScrollView>
+        <HeaderView onTap={() => this.props.setTab('status')} />
+        <ViewPager
+          dataSource={this.state.dataSource}
+          renderPage={this.renderPage} />
       </View>
     );
   }

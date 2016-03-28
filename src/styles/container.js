@@ -5,6 +5,7 @@ import React, { Dimensions, StyleSheet } from 'react-native';
 var styles = StyleSheet.create({
   container: {
     flex: 1,
+    alignSelf: 'stretch',
   },
   horizontalCenter: {
     justifyContent: 'center',

@@ -4,7 +4,7 @@ import React from 'react-native';
 const { TouchableHighlight, View, Text, StyleSheet } = React;
 import RightHeaderButton from './right_header_button.js';
 
-var HeaderView = React.createClass({
+const HeaderView = React.createClass({
   onTap: function() {
     if (this.props.onTap) {
       this.props.onTap();

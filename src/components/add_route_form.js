@@ -1,14 +1,15 @@
 'use strict';
 
 import React from 'react-native';
-const { View, Text, TextInput, StyleSheet } = React;
+const { StyleSheet, Text, TextInput, TouchableWithoutFeedback, View } = React;
+import dismissKeyboard from 'dismissKeyboard';
 import HeaderView from './header_view.js';
 import RightHeaderButton from './right_header_button.js';
 import containerStyles from '../styles/container.js';
 const { container, horizontalCenter, verticalTop } = containerStyles;
 import Route from '../models/routes.js';
 import icons from '../icons.js';
-const { newIcon } = icons;
+const { createNew } = icons;
 
 var AddRouteForm = React.createClass({
   getInitialState: function() {
@@ -24,52 +25,52 @@ var AddRouteForm = React.createClass({
   },
   render: function() {
     return (
-      <View style={container}>
-        <HeaderView>
-          <RightHeaderButton
-            source={{uri: newIcon}}
-            onTap={this.createRoute} />
-        </HeaderView>
-        <View style={[horizontalCenter, verticalTop]}>
-          <TextInput
-            ref='from'
-            placeholder='From'
-            style={styles.input}
-            onChangeText={(text) => { this.setState({ from: text }); }}
-            value={this.state.from}
-            autoFocus={true}
-            clearButtonMode='while-editing'
-            returnKeyType='next'
-            enablesReturnKeyAutomatically={true}
-            blurOnSubmit={false}
-            onSubmitEditing={() => { this.refs.to.focus(); }}
-            />
-          <TextInput
-            ref='to'
-            placeholder='To'
-            style={styles.input}
-            onChangeText={(text) => { this.setState({ to: text }); }}
-            value={this.state.to}
-            clearButtonMode='while-editing'
-            returnKeyType='next'
-            enablesReturnKeyAutomatically={true}
-            blurOnSubmit={false}
-            onSubmitEditing={() => { this.refs.preferredTrain.focus(); }}
-            />
-          <TextInput
-            ref='preferredTrain'
-            placeholder='Preferred Train'
-            style={styles.input}
-            onChangeText={(text) => { this.setState({ preferredTrain: text }); }}
-            value={this.state.preferredTrain}
-            clearButtonMode='while-editing'
-            returnKeyType='done'
-            enablesReturnKeyAutomatically={true}
-            blurOnSubmit={false}
-            onSubmitEditing={this.createRoute}
-            />
+      <TouchableWithoutFeedback style={container} onPress={() => dismissKeyboard()}>
+        <View style={container}>
+          <HeaderView onTap={() => this.props.setTab('status')}>
+            <RightHeaderButton
+              source={{uri: createNew}}
+              onTap={this.createRoute} />
+          </HeaderView>
+          <View style={[horizontalCenter, verticalTop]}>
+            <TextInput
+              ref='from'
+              placeholder='From'
+              style={styles.input}
+              onChangeText={(text) => { this.setState({ from: text }); }}
+              value={this.state.from}
+              autoFocus={true}
+              clearButtonMode='while-editing'
+              returnKeyType='next'
+              enablesReturnKeyAutomatically={true}
+              blurOnSubmit={false}
+              onSubmitEditing={() => { this.refs.to.focus(); }} />
+            <TextInput
+              ref='to'
+              placeholder='To'
+              style={styles.input}
+              onChangeText={(text) => { this.setState({ to: text }); }}
+              value={this.state.to}
+              clearButtonMode='while-editing'
+              returnKeyType='next'
+              enablesReturnKeyAutomatically={true}
+              blurOnSubmit={false}
+              onSubmitEditing={() => { this.refs.preferredTrain.focus(); }} />
+            <TextInput
+              ref='preferredTrain'
+              placeholder='Preferred Train'
+              style={styles.input}
+              onChangeText={(text) => { this.setState({ preferredTrain: text }); }}
+              value={this.state.preferredTrain}
+              keyboardType='numeric'
+              clearButtonMode='while-editing'
+              returnKeyType='done'
+              enablesReturnKeyAutomatically={true}
+              blurOnSubmit={false}
+              onSubmitEditing={this.createRoute} />
+          </View>
         </View>
-      </View>
+      </TouchableWithoutFeedback>
     );
   }
 });
