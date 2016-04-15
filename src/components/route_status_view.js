@@ -39,11 +39,12 @@ const RouteStatusView = React.createClass({
             dataSource: this.state.dataSource.cloneWithRows(response.data),
             refreshing: false,
           });
-        });
+        })
+        .catch(console.log);
     });
   },
   renderTrain(train) {
-    const preferredTrain = this.props.route.options.preferredTrain;
+    const preferredTrain = parseInt(this.props.route.options.preferredTrain);
     return (
       <View style={[styles.train, preferredTrain && train.number === preferredTrain && styles.highlightedTrain]}>
         <Text style={styles.trainNumber}>{train.number}</Text>
