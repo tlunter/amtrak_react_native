@@ -18,7 +18,7 @@ const RightHeaderButton = React.createClass({
         underlayColor='rgba(0,0,0,0.0);'
         onPress={this.onTap}
         style={styles.right}>
-        <Image style={styles.image} source={this.props.source} />
+        <Image style={[styles.image, this.props.style]} source={this.props.source} />
       </TouchableHighlight>
     );
   },
@@ -28,7 +28,10 @@ const styles = StyleSheet.create({
   right: {
     position: 'absolute',
     right: 0,
-    padding: 4,
+    height: 42,
+    width: 42,
+    alignItems: 'flex-start',
+    justifyContent: 'center',
   },
   image: {
     height: 38,
