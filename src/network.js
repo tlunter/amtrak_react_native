@@ -10,7 +10,7 @@ const Network = {
     NetworkStack += 1;
     this.handleNetworkIndicator();
     return axios.get(url)
-      .then((response) => {
+      .finally((response) => {
         NetworkStack -= 1;
         this.handleNetworkIndicator();
         return response;
