@@ -11,8 +11,8 @@ const HeaderView = React.createClass({
     }
   },
   render: function() {
-    var rightButton = null;
-    React.Children.forEach(this.props.children, function(child) {
+    let rightButton;
+    React.Children.forEach(this.props.children, (child) => {
       if (child.props.right) {
         rightButton = child;
       }
