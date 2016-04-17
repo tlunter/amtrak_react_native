@@ -35,12 +35,15 @@ const RouteStatusView = React.createClass({
       const route = this.props.route;
       Network.get(`http://amtrak.tlunter.com/${route.from}/${route.to}.json`)
         .then((response) => {
+          return response.json();
+        })
+        .then((data) => {
           this.setState({
-            dataSource: this.state.dataSource.cloneWithRows(response.data),
+            dataSource: this.state.dataSource.cloneWithRows(data),
             refreshing: false,
           });
         })
-        .catch(console.log);
+        .done();
     });
   },
   renderTrain(train) {

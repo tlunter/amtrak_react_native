@@ -1,6 +1,5 @@
 'use strict';
 
-import axios from 'axios';
 import React from 'react-native';
 const { TouchableHighlight, StyleSheet, Image, Text, View } = React;
 import containerStyles from '../styles/container.js';

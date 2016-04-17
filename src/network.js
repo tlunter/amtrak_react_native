@@ -1,7 +1,6 @@
 'use strict';
 
 import { StatusBarIOS } from 'react-native';
-import axios from 'axios';
 
 let NetworkStack = 0;
 
@@ -9,7 +8,7 @@ const Network = {
   get(url) {
     NetworkStack += 1;
     this.handleNetworkIndicator();
-    return axios.get(url)
+    return fetch(url)
       .finally((response) => {
         NetworkStack -= 1;
         this.handleNetworkIndicator();
