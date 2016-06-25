@@ -2,7 +2,6 @@
 
 import React from 'react-native';
 const { TouchableHighlight, View, Text, StyleSheet } = React;
-import RightHeaderButton from './right_header_button.js';
 
 const HeaderView = React.createClass({
   onTap: function() {
@@ -11,21 +10,17 @@ const HeaderView = React.createClass({
     }
   },
   render: function() {
-    let rightButton;
-    React.Children.forEach(this.props.children, (child) => {
-      if (child.props.right) {
-        rightButton = child;
-      }
-    });
+    const { left, right } = this.props;
     return (
       <View style={styles.header}>
+        {left}
         <TouchableHighlight
           activeOpacity={0.6}
           underlayColor='rgba(0,0,0,0.0);'
           onPress={this.onTap}>
           <Text style={styles.headerText}>Amtrak Status</Text>
         </TouchableHighlight>
-        {rightButton}
+        {right}
       </View>
     );
   }

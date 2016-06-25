@@ -1,64 +1,72 @@
 'use strict';
 
-import React, { Dimensions, ScrollView, StyleSheet, Text, View, ListView } from 'react-native';
+import React, { ScrollView, StyleSheet, Text, TouchableHighlight, View, ListView } from 'react-native';
 import ViewPager from 'react-native-viewpager';
 import HeaderView from './header_view.js';
+import LeftHeaderButton from './left_header_button.js';
 import RightHeaderButton from './right_header_button.js';
-import RouteStatusView from './route_status_view.js';
+import RouteTableCell from './route_table_cell.js';
 import Route from '../models/routes.js';
-import styles from '../styles/container.js';
+import containerStyles from '../styles/container.js';
 import icons from '../icons.js';
-const { edit } = icons;
-
-const pageWidth = Dimensions.get('window').width;
+const { plus } = icons;
 
 var StatusView = React.createClass({
+  getInitialState() {
+    const lv = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
+    return {
+      routes: lv.cloneWithRows([])
+    };
+  },
   componentDidMount() {
     this.load();
   },
-  getInitialState() {
-    return {
-      dataSource: new ViewPager.DataSource({
-        pageHasChanged: (p1, p2) => p1.compileKey() !== p2.compileKey(),
-      }),
-      pageNumber: -1
-    };
+  componentWillReceiveProps() {
+    this.load();
   },
+
   load: async function() {
     const routes = await (Route.all());
-    const dataSource = this.state.dataSource.cloneWithPages(routes);
-    if (routes.length > 0 && this.state.pageNumber < 0) {
-      this.setState({ dataSource, pageNumber: 0 });
-    } else {
-      this.setState({ dataSource });
-    }
+
+    this.setState({ routes: this.state.routes.cloneWithRows(routes) });
+  },
+
+  addRoute() {
+    this.props.navigator.push({ addRoute: true });
+  },
+  rightHeaderButton() {
+    return (
+      <RightHeaderButton
+        source={{uri: plus}}
+        onTap={this.addRoute}
+        style={{ height: 26, width: 26 }} />
+    );
   },
   renderPage(route) {
-    return <RouteStatusView key={route.compileKey()} route={route} />;
-  },
-  handleChangePage(pageNumber) {
-    this.setState({ pageNumber });
+    return (
+      <RouteTableCell
+        key={route.id}
+        route={route} />
+    );
   },
   render() {
-    let rightHeaderButton;
-    if (this.state.pageNumber > -1) {
-      rightHeaderButton = (
-        <RightHeaderButton
-          source={{uri: edit}}
-          style={{ height: 34, width: 34 }} />
-      );
-    }
     return (
-      <View style={styles.container}>
-        <HeaderView onTap={() => this.props.setTab('status')}>
-          {rightHeaderButton}
-        </HeaderView>
-        <ViewPager
-          dataSource={this.state.dataSource}
-          renderPage={this.renderPage}
-          onChangePage={this.handleChangePage}/>
+      <View style={containerStyles.container}>
+        <HeaderView
+          onTap={() => this.props.navigator.resetTo({})}
+          right={this.rightHeaderButton()} />
+        <ListView
+          dataSource={this.state.routes}
+          renderRow={this.renderPage}
+          style={styles.list} />
       </View>
     );
+  }
+});
+
+const styles = StyleSheet.create({
+  list: {
+    backgroundColor: '#eeeeee',
   }
 });
 

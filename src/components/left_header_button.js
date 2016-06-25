@@ -2,9 +2,9 @@
 
 import React, { Image, StyleSheet, Text, TouchableHighlight, View } from 'react-native';
 
-const RightHeaderButton = React.createClass({
+const LeftHeaderButton = React.createClass({
   getDefaultProps() {
-    return { right: true, left: false };
+    return { right: false, left: true };
   },
   onTap: function() {
     if (this.props.onTap) {
@@ -17,13 +17,13 @@ const RightHeaderButton = React.createClass({
   renderImage() {
     return <Image style={[styles.image, this.props.style]} source={this.props.source} />;
   },
-  render: function() {
+  render() {
     return (
       <TouchableHighlight
         activeOpacity={0.6}
         underlayColor='rgba(0,0,0,0.0);'
         onPress={this.onTap}
-        style={styles.right}>
+        style={styles.left}>
         {this.props.text ? this.renderText() : this.renderImage()}
       </TouchableHighlight>
     );
@@ -31,12 +31,12 @@ const RightHeaderButton = React.createClass({
 });
 
 const styles = StyleSheet.create({
-  right: {
+  left: {
     position: 'absolute',
-    right: 0,
+    left: 0,
     height: 42,
     width: 42,
-    alignItems: 'flex-start',
+    alignItems: 'flex-end',
     justifyContent: 'center',
   },
   image: {
@@ -49,4 +49,4 @@ const styles = StyleSheet.create({
   }
 });
 
-export default RightHeaderButton;
+export default LeftHeaderButton;

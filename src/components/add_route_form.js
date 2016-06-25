@@ -4,39 +4,79 @@ import React from 'react-native';
 const { StyleSheet, Text, TextInput, TouchableWithoutFeedback, View } = React;
 import dismissKeyboard from 'dismissKeyboard';
 import HeaderView from './header_view.js';
+import LeftHeaderButton from './left_header_button.js';
 import RightHeaderButton from './right_header_button.js';
 import containerStyles from '../styles/container.js';
 const { container, horizontalCenter, verticalTop } = containerStyles;
 import Route from '../models/routes.js';
 import icons from '../icons.js';
-const { createNew } = icons;
+const { plus, edit } = icons;
 
 var AddRouteForm = React.createClass({
   getInitialState: function() {
-    return { from: '', to: '', preferredTrain: '' }
-  },
-  createRoute: function() {
-    const { from, to, preferredTrain } = this.state;
-    if (from.length && to.length && preferredTrain.length) {
-      const route = new Route(from, to, { preferredTrain });
-      route.save()
-        .then(() => this.props.setTab('status'));
+    if (this.props.route) {
+      const { from, to, preferredTrain } = this.props.route;
+      return { from, to, preferredTrain };
+    } else {
+      return {};
     }
+  },
+  createOrUpdateRoute: function() {
+    const { from, to, preferredTrain } = this.state;
+
+    if (!from.length) {
+      this.setState({ fromError: true });
+      return;
+    }
+
+    if (!to.length) {
+      this.setState({ toError: true });
+      return;
+    }
+
+    this.setState({
+      fromError: false, toError: false
+    }, function() {
+      if (this.props.route && this.props.route.id) {
+        console.log("Updating");
+        Route.get(this.props.route.id)
+          .then((route) => {
+            return route.update({ from, to, preferredTrain });
+          })
+          .then(() => this.props.navigator.resetTo({}))
+          .done();
+      } else {
+        console.log("Saving");
+        new Route({ from, to, preferredTrain })
+          .save()
+          .then(() => this.props.navigator.resetTo({}))
+          .done();
+      }
+    });
+  },
+  leftHeaderButton() {
+    return (
+      <LeftHeaderButton
+        text="Back"
+        onTap={this.props.navigator.pop} />
+    );
+  },
+  rightHeaderButton() {
+    return <RightHeaderButton text="Save" onTap={this.createOrUpdateRoute} />;
   },
   render: function() {
     return (
       <TouchableWithoutFeedback style={container} onPress={() => dismissKeyboard()}>
         <View style={container}>
-          <HeaderView onTap={() => this.props.setTab('status')}>
-            <RightHeaderButton
-              source={{uri: createNew}}
-              onTap={this.createRoute} />
-          </HeaderView>
+          <HeaderView
+            onTap={this.props.navigator.pop}
+            left={this.leftHeaderButton()}
+            right={this.rightHeaderButton()} />
           <View style={[horizontalCenter, verticalTop]}>
             <TextInput
               ref='from'
               placeholder='From'
-              style={styles.input}
+              style={[styles.input, this.state.fromError && styles.error]}
               onChangeText={(text) => { this.setState({ from: text }); }}
               value={this.state.from}
               autoFocus={true}
@@ -48,7 +88,7 @@ var AddRouteForm = React.createClass({
             <TextInput
               ref='to'
               placeholder='To'
-              style={styles.input}
+              style={[styles.input, this.state.toError && styles.error]}
               onChangeText={(text) => { this.setState({ to: text }); }}
               value={this.state.to}
               clearButtonMode='while-editing'
@@ -67,7 +107,7 @@ var AddRouteForm = React.createClass({
               returnKeyType='done'
               enablesReturnKeyAutomatically={true}
               blurOnSubmit={false}
-              onSubmitEditing={this.createRoute} />
+              onSubmitEditing={this.createOrUpdateRoute} />
           </View>
         </View>
       </TouchableWithoutFeedback>
@@ -82,7 +122,9 @@ var styles = StyleSheet.create({
     height: 40,
     borderColor: '#cccccc',
     borderWidth: 1,
-    borderRadius: 5,
+  },
+  error: {
+    borderColor: '#ff0000',
   }
 });
 

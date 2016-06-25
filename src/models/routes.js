@@ -3,52 +3,117 @@ var { AsyncStorage } = React;
 
 var ROUTES_LIST = 'ROUTES_LIST';
 
-var Route = function(from, to, options) {
-  this.from = from;
-  this.to = to;
-  this.options = { preferredTrain: options.preferredTrain, };
+function genUUID() {
+  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+    var r = Math.random()*16|0, v = c == 'x' ? r : (r&0x3|0x8);
+    return v.toString(16);
+  });
+}
+
+function getRoutes() {
+  return AsyncStorage.getItem(ROUTES_LIST)
+    .then((result) => JSON.parse(result) || [])
+    .then((result) => {
+      if (!Array.isArray(result)) { return []; }
+      return result;
+    });
 };
 
-Route.prototype.save = function(callback) {
-  return AsyncStorage.getItem(ROUTES_LIST)
-    .then((routesJson) => {
-      var routes = JSON.parse(routesJson) || {};
-      routes[this.compileKey()] = [this.from, this.to, this.options];
-      return AsyncStorage.setItem(
-        ROUTES_LIST,
-        JSON.stringify(routes)
-      );
+function storeRoutes(routes) {
+  return AsyncStorage.setItem(
+    ROUTES_LIST,
+    JSON.stringify(routes)
+  );
+}
+
+var Route = function(attributes) {
+  if (!attributes) throw new Route.MissingAttributesError();
+
+  this.id = attributes.id || genUUID();
+  this.from = attributes.from;
+  this.to = attributes.to;
+  this.preferredTrain = attributes.preferredTrain;
+};
+
+Route.prototype.properties = function() {
+  return {
+    id: this.id,
+    from: this.from,
+    to: this.to,
+    preferredTrain: this.preferredTrain
+  };
+}
+
+Route.prototype.save = function() {
+  return getRoutes()
+    .then((routes) => {
+      const index = routes.findIndex((route) => this.id === route.id, this);
+      if (index > -1) {
+        routes[index] = this.properties();
+      } else {
+        routes.push(this.properties());
+      }
+      return storeRoutes(routes);
     })
     .catch((err) => {
       console.log(err);
     });
 };
 
-Route.prototype.compileKey = function() {
-  return "" + this.from + "," + this.to;
+Route.prototype.remove = function() {
+  return getRoutes()
+    .then((routes) => {
+      const index = routes.findIndex((route) => route.id === this.id, this);
+      if (index) {
+        delete route[index];
+        return setRoutes(routes);
+      }
+    });
+};
+
+Route.prototype.update = function(attributes) {
+  const { from, to, preferredTrain } = attributes;
+  return this.remove()
+    .then(() => {
+      this.from = from;
+      this.to = to;
+      this.preferredTrain = preferredTrain;
+
+      return this.save();
+    })
+    .catch((err) => {
+      console.log(err);
+    });
+};
+
+Route.get = function(id) {
+  return getRoutes()
+    .then((routes) => {
+      const route = routes.find((route) => route.id === id);
+
+      if (route) {
+        return new Route(route);
+      }
+      throw new Route.NoKnownRouteError();
+    });
 };
 
 Route.find = function(from, to) {
-  return AsyncStorage.getItem(ROUTES_LIST)
-    .then(function(result) {
-      var routes = JSON.parse(result) || {};
-      var key = new Route(from, to).compileKey();
-      var route = routes[key];
+  return getRoutes()
+    .then((routes) => {
+      const route = routes.find((route) => route.from === from && route.to === to, this);
 
       if (route) {
-        return new Route(...route);
+        return new Route(route);
       }
       throw new Route.NoKnownRouteError();
     });
 };
 
 Route.all = function() {
-  return AsyncStorage.getItem(ROUTES_LIST)
-    .then(function(result) {
-      var routes = JSON.parse(result) || {};
-      return Object.keys(routes).map(function(route) {
-        return new Route(...routes[route]);
-      });
+  return getRoutes()
+    .then((routes) => {
+      return routes.map((route) => new Route(route));
     });
 };
 
@@ -59,5 +124,13 @@ Route.NoKnownRouteError = function(message) {
 
 Route.NoKnownRouteError.prototype = Object.create(Error.prototype);
 Route.NoKnownRouteError.prototype.constructor = Route.NoKnownRouteError;
+
+Route.MissingAttributesError = function(message) {
+  this.name = 'MissingAttributesError';
+  this.message = message || 'Missing attributes for a route';
+}
+
+Route.MissingAttributesError.prototype = Object.create(Error.prototype);
+Route.MissingAttributesError.prototype.constructor = Route.MissingAttributesError;
 
 export default Route;
