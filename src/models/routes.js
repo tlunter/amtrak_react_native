@@ -1,5 +1,4 @@
-import React from 'react-native';
-var { AsyncStorage } = React;
+import { AsyncStorage } from 'react-native';
 
 var ROUTES_LIST = 'ROUTES_LIST';
 
@@ -64,9 +63,9 @@ Route.prototype.remove = function() {
   return getRoutes()
     .then((routes) => {
       const index = routes.findIndex((route) => route.id === this.id, this);
-      if (index) {
-        delete route[index];
-        return setRoutes(routes);
+      if (index > -1) {
+        routes.splice(index, 1);
+        return storeRoutes(routes);
       }
     });
 };
@@ -113,7 +112,8 @@ Route.find = function(from, to) {
 Route.all = function() {
   return getRoutes()
     .then((routes) => {
-      return routes.map((route) => new Route(route));
+      return routes
+        .map((route) => new Route(route));
     });
 };
 

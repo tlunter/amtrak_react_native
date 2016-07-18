@@ -1,13 +1,13 @@
 'use strict';
 
-import React from 'react-native';
-const { StyleSheet, Text, TextInput, TouchableWithoutFeedback, View } = React;
+import React from 'react';
+import { StyleSheet, Text, TextInput, TouchableWithoutFeedback, View } from 'react-native';
 import dismissKeyboard from 'dismissKeyboard';
 import HeaderView from './header_view.js';
 import LeftHeaderButton from './left_header_button.js';
 import RightHeaderButton from './right_header_button.js';
 import containerStyles from '../styles/container.js';
-const { container, horizontalCenter, verticalTop } = containerStyles;
+const { container, fullWidth, horizontalCenter, verticalTop } = containerStyles;
 import Route from '../models/routes.js';
 import icons from '../icons.js';
 const { plus, edit } = icons;
@@ -119,7 +119,11 @@ var styles = StyleSheet.create({
   input: {
     margin: 5,
     padding: 5,
+
     height: 40,
+
+    alignSelf: 'stretch',
+
     borderColor: '#cccccc',
     borderWidth: 1,
   },

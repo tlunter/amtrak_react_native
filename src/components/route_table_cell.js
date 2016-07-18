@@ -1,6 +1,7 @@
 'use strict';
 
-import React, { Image, StyleSheet, Text, TouchableHighlight, View } from 'react-native';
+import React from 'react';
+import { Image, StyleSheet, Text, TouchableHighlight, View } from 'react-native';
 import TimerMixin from 'react-timer-mixin';
 import Network from '../network';
 import RouteView from './route_view.js';
@@ -46,16 +47,23 @@ const RouteTableCell = React.createClass({
 
   renderSpecsView() {
     const { from, to, preferredTrain } = this.props.route;
+    let preferredTrainText;
+
+    if (preferredTrain) {
+      preferredTrainText = <Text style={styles.specsText}>{' '}({preferredTrain})</Text>;
+    }
+
     return (
       <TouchableHighlight
-        style={styles.header}
+        style={[styles.header, styles.specs]}
         onPress={this.toggleRouteExposed}
         onLongPress={this.toggleSettingsExposed}
         underlayColor="white">
         <View style={styles.specsView}>
           <Text style={styles.specsText}>{from.toUpperCase()}</Text>
           <Image style={styles.arrowImage} source={{uri: circleRight}} />
-          <Text style={styles.specsText}>{to.toUpperCase()} ({preferredTrain})</Text>
+          <Text style={styles.specsText}>{to.toUpperCase()}</Text>
+          {preferredTrainText}
         </View>
       </TouchableHighlight>
     );
@@ -64,8 +72,16 @@ const RouteTableCell = React.createClass({
     if (this.state.settingsExposed) {
       return (
         <View style={[styles.header, styles.settings]}>
-          <Image style={styles.settingsImage} source={{uri: edit}} />
-          <Image style={styles.settingsImage} source={{uri: cross}} />
+          <TouchableHighlight
+            onPress={this.props.editRoute}
+            underlayColor="white">
+            <Image style={styles.settingsImage} source={{uri: edit}} />
+          </TouchableHighlight>
+          <TouchableHighlight
+            onPress={this.props.deleteRoute}
+            underlayColor="white">
+            <Image style={styles.settingsImage} source={{uri: cross}} />
+          </TouchableHighlight>
         </View>
       );
     }
@@ -106,6 +122,9 @@ const styles = StyleSheet.create({
   header: {
     padding: 10,
   },
+  specs: {
+    flex: 1,
+  },
   specsView: {
     flexDirection: 'row',
   },
@@ -113,7 +132,9 @@ const styles = StyleSheet.create({
     flex: 0,
     fontSize: 18,
     textAlign: 'center',
+
     fontWeight: 'bold',
+    color: '#000000',
   },
 
   settings: {

@@ -1,6 +1,6 @@
 'use strict';
 
-import React, { Dimensions, StyleSheet } from 'react-native';
+import { Dimensions, StyleSheet } from 'react-native';
 
 var styles = StyleSheet.create({
   container: {

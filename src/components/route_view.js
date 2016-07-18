@@ -1,6 +1,7 @@
 'use strict';
 
-import React, { ListView, StyleSheet, Text, View } from 'react-native';
+import React from 'react';
+import { ListView, StyleSheet, Text, View } from 'react-native';
 import containerStyles from '../styles/container';
 const { container, fullWidth } = containerStyles;
 
@@ -59,27 +60,33 @@ var styles = StyleSheet.create({
   },
   trainNumber: {
     flex: 1,
-    paddingTop: 5,
-    paddingBottom: 5,
-    paddingLeft: 10,
-    paddingRight: 10,
+    marginTop: 5,
+    marginBottom: 5,
+    marginLeft: 10,
+    marginRight: 10,
+
     fontSize: textHeight,
+    color: '#000000',
   },
   trainScheduled: {
     flex: 2,
-    paddingTop: 5,
-    paddingBottom: 5,
-    paddingLeft: 10,
-    paddingRight: 10,
+    marginTop: 5,
+    marginBottom: 5,
+    marginLeft: 10,
+    marginRight: 10,
+
     fontSize: textHeight,
+    color: '#000000',
   },
   trainEstimated: {
     flex: 2,
-    paddingTop: 5,
-    paddingBottom: 5,
-    paddingLeft: 10,
-    paddingRight: 10,
+    marginTop: 5,
+    marginBottom: 5,
+    marginLeft: 10,
+    marginRight: 10,
+
     fontSize: textHeight,
+    color: '#000000',
   },
 });
 

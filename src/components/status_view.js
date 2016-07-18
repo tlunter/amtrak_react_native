@@ -1,7 +1,8 @@
 'use strict';
 
-import React, { ScrollView, StyleSheet, Text, TouchableHighlight, View, ListView } from 'react-native';
-import ViewPager from 'react-native-viewpager';
+import React from 'react';
+import { ScrollView, StyleSheet, Text, TouchableHighlight, View, ListView } from 'react-native';
+import ViewPager from '../view_pager.js';
 import HeaderView from './header_view.js';
 import LeftHeaderButton from './left_header_button.js';
 import RightHeaderButton from './right_header_button.js';
@@ -25,15 +26,25 @@ var StatusView = React.createClass({
     this.load();
   },
 
-  load: async function() {
-    const routes = await (Route.all());
-
-    this.setState({ routes: this.state.routes.cloneWithRows(routes) });
+  load: function() {
+    Route.all()
+      .then((routes) => {
+        console.log(`Routes: ${JSON.stringify(routes)}`);
+        this.setState({ routes: this.state.routes.cloneWithRows(routes) });
+      })
+      .done();
   },
 
   addRoute() {
     this.props.navigator.push({ addRoute: true });
   },
+  editRoute(route) {
+    this.props.navigator.push({ editRoute: true, route: route });
+  },
+  deleteRoute(route) {
+    route.remove().then(this.load).done();
+  },
+
   rightHeaderButton() {
     return (
       <RightHeaderButton
@@ -46,7 +57,9 @@ var StatusView = React.createClass({
     return (
       <RouteTableCell
         key={route.id}
-        route={route} />
+        route={route}
+        editRoute={this.editRoute.bind(this, route)}
+        deleteRoute={this.deleteRoute.bind(this, route)} />
     );
   },
   render() {
@@ -58,7 +71,8 @@ var StatusView = React.createClass({
         <ListView
           dataSource={this.state.routes}
           renderRow={this.renderPage}
-          style={styles.list} />
+          style={styles.list}
+          enableEmptySections={true} />
       </View>
     );
   }

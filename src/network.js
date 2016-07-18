@@ -1,6 +1,6 @@
 'use strict';
 
-import { StatusBarIOS } from 'react-native';
+import { StatusBar, Platform } from 'react-native';
 
 let NetworkStack = 0;
 
@@ -17,7 +17,10 @@ const Network = {
   },
   handleNetworkIndicator() {
     console.log(`NetworkStack: ${NetworkStack}`);
-    StatusBarIOS.setNetworkActivityIndicatorVisible(NetworkStack > 0);
+
+    if (Platform.OS === 'ios') {
+      StatusBar.setNetworkActivityIndicatorVisible(NetworkStack > 0);
+    }
   }
 };
 

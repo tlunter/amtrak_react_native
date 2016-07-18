@@ -1,6 +1,6 @@
 'use strict';
-
-import React, { Image, StyleSheet, Text, TouchableHighlight, View } from 'react-native';
+import React from 'react';
+import { Image, StyleSheet, Text, TouchableHighlight, View } from 'react-native';
 
 const RightHeaderButton = React.createClass({
   getDefaultProps() {
@@ -12,7 +12,11 @@ const RightHeaderButton = React.createClass({
     }
   },
   renderText() {
-    return <Text style={[styles.text, this.props.style]}>{this.props.text}</Text>;
+    return (
+      <View style={styles.textView}>
+        <Text style={[styles.text, this.props.style]}>{this.props.text}</Text>
+      </View>
+    );
   },
   renderImage() {
     return <Image style={[styles.image, this.props.style]} source={this.props.source} />;
@@ -35,7 +39,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     right: 0,
     height: 42,
-    width: 42,
+    minWidth: 42,
     alignItems: 'flex-start',
     justifyContent: 'center',
   },
@@ -43,6 +47,9 @@ const styles = StyleSheet.create({
     height: 38,
     width: 38,
     tintColor: '#ffffff',
+  },
+  textView: {
+    padding: 3,
   },
   text: {
     color: '#ffffff',

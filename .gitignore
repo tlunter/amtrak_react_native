@@ -19,24 +19,26 @@ xcuserdata
 DerivedData
 *.hmap
 *.ipa
-*.zip
 *.xcuserstate
 project.xcworkspace
 
 # Android/IJ
 #
+*.iml
 .idea
 .gradle
 local.properties
-
-# Cocoapods
-Pods
 
 # node.js
 #
 node_modules/
 npm-debug.log
 
-# React Native
-#
-ios/main.jsbundle
+# BUCK
+buck-out/
+\.buckd/
+android/app/libs
+android/keystores/debug.keystore
+
+android/app/release-key.keystore
+

@@ -1,7 +1,7 @@
 'use strict';
 
-import React from 'react-native';
-const { TouchableHighlight, View, Text, StyleSheet } = React;
+import React from 'react';
+import { Platform, StyleSheet, TouchableHighlight, Text, View } from 'react-native';
 
 const HeaderView = React.createClass({
   onTap: function() {
@@ -11,8 +11,12 @@ const HeaderView = React.createClass({
   },
   render: function() {
     const { left, right } = this.props;
+    const platformHeaderStyle = Platform.select({
+      ios: styles.headerIOS,
+      android: styles.headerAndroid,
+    });
     return (
-      <View style={styles.header}>
+      <View style={[styles.header, platformHeaderStyle]}>
         {left}
         <TouchableHighlight
           activeOpacity={0.6}
@@ -31,13 +35,18 @@ var styles = StyleSheet.create({
     flex: 1,
   },
   header: {
-    height: 64,
-    paddingTop: 18,
     backgroundColor: '#1375b3',
     flexDirection: 'row',
     justifyContent: 'center',
     borderBottomWidth: 1,
     borderColor: '#000000',
+  },
+  headerIOS: {
+    height: 64,
+    paddingTop: 18,
+  },
+  headerAndroid: {
+    height: 56,
   },
   headerText: {
     color: '#ffffff',
