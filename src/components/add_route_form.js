@@ -12,16 +12,23 @@ import Route from '../models/routes.js';
 import icons from '../icons.js';
 const { plus, edit } = icons;
 
-var AddRouteForm = React.createClass({
-  getInitialState: function() {
-    if (this.props.route) {
-      const { from, to, preferredTrain } = this.props.route;
-      return { from, to, preferredTrain };
+class AddRouteForm extends React.Component {
+  constructor(props) {
+    super(props);
+
+    if (props.route) {
+      const { from, to, preferredTrain } = props.route;
+      this.state = { from, to, preferredTrain };
     } else {
-      return {};
+      this.state = {};
     }
-  },
-  createOrUpdateRoute: function() {
+
+    this.createOrUpdateRoute = this.createOrUpdateRoute.bind(this);
+    this.leftHeaderButton = this.leftHeaderButton.bind(this);
+    this.rightHeaderButton = this.rightHeaderButton.bind(this);
+  }
+
+  createOrUpdateRoute() {
     const { from, to, preferredTrain } = this.state;
 
     if (!from.length) {
@@ -40,36 +47,37 @@ var AddRouteForm = React.createClass({
       if (this.props.route && this.props.route.id) {
         console.log("Updating");
         Route.get(this.props.route.id)
-          .then((route) => {
-            return route.update({ from, to, preferredTrain });
-          })
-          .then(() => this.props.navigator.resetTo({}))
+          .then((route) => route.update({ from, to, preferredTrain }))
+          .then(this.props.navigation.popToTop)
           .done();
       } else {
         console.log("Saving");
         new Route({ from, to, preferredTrain })
           .save()
-          .then(() => this.props.navigator.resetTo({}))
+          .then(this.props.navigation.popToTop)
           .done();
       }
     });
-  },
+  }
+
   leftHeaderButton() {
     return (
       <LeftHeaderButton
         text="Back"
-        onTap={this.props.navigator.pop} />
+        onTap={this.props.navigation.pop} />
     );
-  },
+  }
+
   rightHeaderButton() {
     return <RightHeaderButton text="Save" onTap={this.createOrUpdateRoute} />;
-  },
-  render: function() {
+  }
+
+  render() {
     return (
       <TouchableWithoutFeedback style={container} onPress={() => dismissKeyboard()}>
         <View style={container}>
           <HeaderView
-            onTap={this.props.navigator.pop}
+            onTap={this.props.navigation.pop}
             left={this.leftHeaderButton()}
             right={this.rightHeaderButton()} />
           <View style={[horizontalCenter, verticalTop]}>
@@ -113,7 +121,7 @@ var AddRouteForm = React.createClass({
       </TouchableWithoutFeedback>
     );
   }
-});
+};
 
 var styles = StyleSheet.create({
   input: {

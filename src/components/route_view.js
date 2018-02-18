@@ -5,17 +5,23 @@ import { ListView, StyleSheet, Text, View } from 'react-native';
 import containerStyles from '../styles/container';
 const { container, fullWidth } = containerStyles;
 
-const RouteView = React.createClass({
-  getInitialState() {
+class RouteView extends React.Component {
+  constructor(props) {
+    super(props);
+
     var ds = new ListView.DataSource({ rowHasChanged: (r1, r2) => r1 !== r2 });
-    return { dataSource: ds };
-  },
+    this.state = { dataSource: ds };
+
+    this.renderTrain = this.renderTrain.bind(this);
+  }
+
   componentWillMount() {
     this.setState({ dataSource: this.state.dataSource.cloneWithRows(this.props.statuses) });
-  },
+  }
+
   componentWillReceiveProps(newProps) {
     this.setState({ dataSource: this.state.dataSource.cloneWithRows(newProps.statuses) });
-  },
+  }
 
   renderTrain(status) {
     const preferredTrain = parseInt(this.props.preferredTrain);
@@ -27,7 +33,8 @@ const RouteView = React.createClass({
         <Text style={styles.trainEstimated}>{status.departure && status.departure.estimated_time}</Text>
       </View>
     );
-  },
+  }
+
   render() {
     return (
       <View style={[container, styles.wrappingView]}>
@@ -38,7 +45,7 @@ const RouteView = React.createClass({
       </View>
     );
   }
-});
+};
 
 const textHeight = 20;
 

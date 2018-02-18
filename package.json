@@ -3,12 +3,11 @@
   "version": "0.0.1",
   "private": true,
   "scripts": {
-    "start": "node_modules/react-native/packager/packager.sh --assetRoots=src"
+    "start": "node_modules/react-native/scripts/packager.sh"
   },
   "dependencies": {
-    "react": "^15.2.0",
-    "react-native": "^0.29.2",
-    "react-native-viewpager": "^0.2.10",
-    "react-timer-mixin": "^0.13.3"
+    "react": "^16.2.0",
+    "react-native": "^0.53.0",
+    "react-navigation": "^1.0.3"
   }
 }

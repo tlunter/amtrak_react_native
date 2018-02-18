@@ -3,13 +3,20 @@
 import React from 'react';
 import { Platform, StyleSheet, TouchableHighlight, Text, View } from 'react-native';
 
-const HeaderView = React.createClass({
-  onTap: function() {
+class HeaderView extends React.Component {
+  constructor(props) {
+    super(props);
+
+    this.onTap = this.onTap.bind(this);
+  }
+
+  onTap() {
     if (this.props.onTap) {
       this.props.onTap();
     }
-  },
-  render: function() {
+  }
+
+  render() {
     const { left, right } = this.props;
     const platformHeaderStyle = Platform.select({
       ios: styles.headerIOS,
@@ -28,7 +35,7 @@ const HeaderView = React.createClass({
       </View>
     );
   }
-});
+};
 
 var styles = StyleSheet.create({
   container: {

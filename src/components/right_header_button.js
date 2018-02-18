@@ -2,26 +2,39 @@
 import React from 'react';
 import { Image, StyleSheet, Text, TouchableHighlight, View } from 'react-native';
 
-const RightHeaderButton = React.createClass({
-  getDefaultProps() {
-    return { right: true, left: false };
-  },
-  onTap: function() {
+class RightHeaderButton extends React.Component {
+  static defaultProps = {
+    right: true,
+    left: false
+  }
+
+  constructor(props) {
+    super(props);
+
+    this.onTap = this.onTap.bind(this);
+    this.renderText = this.renderText.bind(this);
+    this.renderImage = this.renderImage.bind(this);
+  }
+
+  onTap() {
     if (this.props.onTap) {
       this.props.onTap();
     }
-  },
+  }
+
   renderText() {
     return (
       <View style={styles.textView}>
         <Text style={[styles.text, this.props.style]}>{this.props.text}</Text>
       </View>
     );
-  },
+  }
+
   renderImage() {
     return <Image style={[styles.image, this.props.style]} source={this.props.source} />;
-  },
-  render: function() {
+  }
+
+  render() {
     return (
       <TouchableHighlight
         activeOpacity={0.6}
@@ -31,8 +44,8 @@ const RightHeaderButton = React.createClass({
         {this.props.text ? this.renderText() : this.renderImage()}
       </TouchableHighlight>
     );
-  },
-});
+  }
+};
 
 const styles = StyleSheet.create({
   right: {

@@ -85,11 +85,10 @@ def pass1 = getPassword("tlunter","android_keystore_1")
 def pass2 = getPassword("tlunter","android_keystore_2")
 
 android {
-    compileSdkVersion 23
-    buildToolsVersion "23.0.1"
+    compileSdkVersion 27
 
     defaultConfig {
-        applicationId "com.tlunter.amtrak"
+        applicationId "com.amtrakstatus"
         minSdkVersion 16
         targetSdkVersion 22
         versionCode 4
@@ -139,7 +138,7 @@ android {
 
 dependencies {
     compile fileTree(dir: "libs", include: ["*.jar"])
-    compile "com.android.support:appcompat-v7:23.0.1"
+    compile "com.android.support:appcompat-v7:27.0.2"
     compile "com.facebook.react:react-native:+"  // From node_modules
     //compile project(':ReactAndroid')
 }

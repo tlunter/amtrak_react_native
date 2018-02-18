@@ -3,25 +3,38 @@
 import React from 'react';
 import { Image, StyleSheet, Text, TouchableHighlight, View } from 'react-native';
 
-const LeftHeaderButton = React.createClass({
-  getDefaultProps() {
-    return { right: false, left: true };
-  },
-  onTap: function() {
+class LeftHeaderButton extends React.Component {
+  static defaultProps = {
+    right: false,
+    left: true
+  }
+
+  constructor(props) {
+    super(props);
+
+    this.onTap = this.onTap.bind(this);
+    this.renderText = this.renderText.bind(this);
+    this.renderImage = this.renderImage.bind(this);
+  }
+
+  onTap() {
     if (this.props.onTap) {
       this.props.onTap();
     }
-  },
+  }
+
   renderText() {
     return (
       <View style={styles.textView}>
         <Text style={[styles.text, this.props.style]}>{this.props.text}</Text>
       </View>
     );
-  },
+  }
+
   renderImage() {
     return <Image style={[styles.image, this.props.style]} source={this.props.source} />;
-  },
+  }
+
   render() {
     return (
       <TouchableHighlight
@@ -32,8 +45,8 @@ const LeftHeaderButton = React.createClass({
         {this.props.text ? this.renderText() : this.renderImage()}
       </TouchableHighlight>
     );
-  },
-});
+  }
+};
 
 const styles = StyleSheet.create({
   left: {

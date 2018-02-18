@@ -2,7 +2,6 @@
 
 import React from 'react';
 import { ScrollView, StyleSheet, Text, TouchableHighlight, View, ListView } from 'react-native';
-import ViewPager from '../view_pager.js';
 import HeaderView from './header_view.js';
 import LeftHeaderButton from './left_header_button.js';
 import RightHeaderButton from './right_header_button.js';
@@ -12,38 +11,51 @@ import containerStyles from '../styles/container.js';
 import icons from '../icons.js';
 const { plus } = icons;
 
-var StatusView = React.createClass({
-  getInitialState() {
+class StatusView extends React.Component {
+  constructor(props) {
+    super(props);
+
     const lv = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
-    return {
-      routes: lv.cloneWithRows([])
-    };
-  },
+    this.state = { routes: lv.cloneWithRows([]) };
+
+    this.load = this.load.bind(this);
+    this.addRoute = this.addRoute.bind(this);
+    this.editRoute = this.editRoute.bind(this);
+    this.deleteRoute = this.deleteRoute.bind(this);
+    this.rightHeaderButton = this.rightHeaderButton.bind(this);
+    this.renderPage = this.renderPage.bind(this);
+  }
+
   componentDidMount() {
     this.load();
-  },
+  }
+
   componentWillReceiveProps() {
     this.load();
-  },
+  }
 
-  load: function() {
+  load() {
     Route.all()
       .then((routes) => {
         console.log(`Routes: ${JSON.stringify(routes)}`);
         this.setState({ routes: this.state.routes.cloneWithRows(routes) });
       })
       .done();
-  },
+  }
 
   addRoute() {
-    this.props.navigator.push({ addRoute: true });
-  },
+    this.props.navigation
+      .push('AddRouteForm', { addRoute: true });
+  }
+
   editRoute(route) {
-    this.props.navigator.push({ editRoute: true, route: route });
-  },
+    this.props.navigation
+      .push('AddRouteForm', { editRoute: true, route: route });
+  }
+
   deleteRoute(route) {
     route.remove().then(this.load).done();
-  },
+  }
 
   rightHeaderButton() {
     return (
@@ -52,7 +64,8 @@ var StatusView = React.createClass({
         onTap={this.addRoute}
         style={{ height: 26, width: 26 }} />
     );
-  },
+  }
+
   renderPage(route) {
     return (
       <RouteTableCell
@@ -61,12 +74,13 @@ var StatusView = React.createClass({
         editRoute={this.editRoute.bind(this, route)}
         deleteRoute={this.deleteRoute.bind(this, route)} />
     );
-  },
+  }
+
   render() {
     return (
       <View style={containerStyles.container}>
         <HeaderView
-          onTap={() => this.props.navigator.resetTo({})}
+          onTap={this.props.navigation.popToTop}
           right={this.rightHeaderButton()} />
         <ListView
           dataSource={this.state.routes}
@@ -76,7 +90,7 @@ var StatusView = React.createClass({
       </View>
     );
   }
-});
+};
 
 const styles = StyleSheet.create({
   list: {

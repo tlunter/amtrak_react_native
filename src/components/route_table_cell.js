@@ -2,29 +2,48 @@
 
 import React from 'react';
 import { Image, StyleSheet, Text, TouchableHighlight, View } from 'react-native';
-import TimerMixin from 'react-timer-mixin';
 import Network from '../network';
 import RouteView from './route_view.js';
 import icons from '../icons.js';
 const { cross, edit, circleRight } = icons;
 
-const RouteTableCell = React.createClass({
-  mixins: [TimerMixin],
-  getInitialState() {
-    return {
+class RouteTableCell extends React.Component {
+  constructor(props) {
+    super(props);
+
+    this.state = {
       settingsExposed: false,
       routeExposed: false,
       statuses: [],
+      timeout: null,
+      interval: null
     };
-  },
+
+    this.load = this.load.bind(this);
+
+    this.toggleSettingsExposed = this.toggleSettingsExposed.bind(this);
+    this.toggleRouteExposed = this.toggleRouteExposed.bind(this);
+
+    this.renderSpecsView = this.renderSpecsView.bind(this);
+    this.renderSettingsView = this.renderSettingsView.bind(this);
+    this.renderRouteRow = this.renderRouteRow.bind(this);
+  }
+
   componentDidMount() {
-    this.setTimeout(this.load, 1);
-    this.setInterval(this.load, 30000);
-  },
+    const timeout = setTimeout(this.load, 1);
+    const interval = setInterval(this.load, 30000);
+
+    this.setState({ timeout, interval });
+  }
+
+  componentWillUnmount() {
+    clearTimeout(this.state.timeout);
+    clearInterval(this.state.interval);
+  }
 
   load() {
     const route = this.props.route;
-    Network.get(`http://amtrak.tlunter.com/${route.from}/${route.to}.json`)
+    Network.get(`http://amtrak.tlunter.com/api/${route.from}/${route.to}.json`)
       .then((response) => {
         if (response instanceof TypeError) {
           throw response;
@@ -36,14 +55,15 @@ const RouteTableCell = React.createClass({
         this.setState({ statuses: data });
       })
       .done();
-  },
+  }
 
   toggleSettingsExposed() {
     this.setState({ settingsExposed: !this.state.settingsExposed });
-  },
+  }
+
   toggleRouteExposed() {
     this.setState({ routeExposed: !this.state.routeExposed });
-  },
+  }
 
   renderSpecsView() {
     const { from, to, preferredTrain } = this.props.route;
@@ -67,7 +87,8 @@ const RouteTableCell = React.createClass({
         </View>
       </TouchableHighlight>
     );
-  },
+  }
+
   renderSettingsView() {
     if (this.state.settingsExposed) {
       return (
@@ -85,7 +106,8 @@ const RouteTableCell = React.createClass({
         </View>
       );
     }
-  },
+  }
+
   renderRouteRow() {
     if (this.state.routeExposed) {
       return (
@@ -94,7 +116,8 @@ const RouteTableCell = React.createClass({
           preferredTrain={this.props.route.preferredTrain} />
       );
     }
-  },
+  }
+
   render() {
     return (
       <View style={styles.row} ref="rowView">
@@ -106,7 +129,7 @@ const RouteTableCell = React.createClass({
       </View>
     );
   }
-});
+};
 
 const styles = StyleSheet.create({
   row: {
