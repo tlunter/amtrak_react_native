@@ -49,8 +49,6 @@ class RightHeaderButton extends React.Component {
 
 const styles = StyleSheet.create({
   right: {
-    position: 'absolute',
-    right: 0,
     height: 42,
     minWidth: 42,
     alignItems: 'flex-start',

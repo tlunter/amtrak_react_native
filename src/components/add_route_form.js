@@ -3,8 +3,6 @@
 import React from 'react';
 import { StyleSheet, Text, TextInput, TouchableWithoutFeedback, View } from 'react-native';
 import dismissKeyboard from 'dismissKeyboard';
-import HeaderView from './header_view.js';
-import LeftHeaderButton from './left_header_button.js';
 import RightHeaderButton from './right_header_button.js';
 import containerStyles from '../styles/container.js';
 const { container, fullWidth, horizontalCenter, verticalTop } = containerStyles;
@@ -13,22 +11,39 @@ import icons from '../icons.js';
 const { plus, edit } = icons;
 
 class AddRouteForm extends React.Component {
+  static navigationOptions = ({ navigation }) => {
+    const params = navigation.state.params || {};
+
+    return {
+      title: params.addRoute ? 'Add' : 'Edit',
+      headerRight: (
+        <RightHeaderButton
+          text="Save"
+          onTap={params.createOrUpdateRoute} />
+      )
+    };
+  };
+
   constructor(props) {
     super(props);
 
-    if (props.route) {
-      const { from, to, preferredTrain } = props.route;
+    const { params } = props.navigation.state;
+
+    if (params.route) {
+      const { from, to, preferredTrain } = params.route;
       this.state = { from, to, preferredTrain };
     } else {
       this.state = {};
     }
 
-    this.createOrUpdateRoute = this.createOrUpdateRoute.bind(this);
-    this.leftHeaderButton = this.leftHeaderButton.bind(this);
-    this.rightHeaderButton = this.rightHeaderButton.bind(this);
+    this._createOrUpdateRoute = this._createOrUpdateRoute.bind(this);
   }
 
-  createOrUpdateRoute() {
+  componentWillMount() {
+    this.props.navigation.setParams({ createOrUpdateRoute: this._createOrUpdateRoute });
+  }
+
+  _createOrUpdateRoute() {
     const { from, to, preferredTrain } = this.state;
 
     if (!from.length) {
@@ -44,9 +59,11 @@ class AddRouteForm extends React.Component {
     this.setState({
       fromError: false, toError: false
     }, function() {
-      if (this.props.route && this.props.route.id) {
+      const { params } = this.props.navigation.state;
+
+      if (params.route && params.route.id) {
         console.log("Updating");
-        Route.get(this.props.route.id)
+        Route.get(params.route.id)
           .then((route) => route.update({ from, to, preferredTrain }))
           .then(this.props.navigation.popToTop)
           .done();
@@ -60,26 +77,10 @@ class AddRouteForm extends React.Component {
     });
   }
 
-  leftHeaderButton() {
-    return (
-      <LeftHeaderButton
-        text="Back"
-        onTap={this.props.navigation.pop} />
-    );
-  }
-
-  rightHeaderButton() {
-    return <RightHeaderButton text="Save" onTap={this.createOrUpdateRoute} />;
-  }
-
   render() {
     return (
       <TouchableWithoutFeedback style={container} onPress={() => dismissKeyboard()}>
         <View style={container}>
-          <HeaderView
-            onTap={this.props.navigation.pop}
-            left={this.leftHeaderButton()}
-            right={this.rightHeaderButton()} />
           <View style={[horizontalCenter, verticalTop]}>
             <TextInput
               ref='from'
