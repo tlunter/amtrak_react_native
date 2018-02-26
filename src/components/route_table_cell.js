@@ -1,13 +1,18 @@
 'use strict';
 
 import React from 'react';
-import { FlatList, Image, StyleSheet, Text, TouchableHighlight, View } from 'react-native';
+import { FlatList, StyleSheet, Text, View } from 'react-native';
 import Network from '../network';
 import RouteStatusView from './route_status_view.js';
+import RouteTableHeader from './route_table_header.js';
+
 import containerStyles from '../styles/container.js';
 const { container, fullWidth } = containerStyles;
+import routeTableStyles from '../styles/route_table.js';
+const { card } = routeTableStyles;
+
 import FontAwesome from './font_awesome.js';
-import { angleDoubleDown, mapMarker, train } from '../icons.js';
+import { angleDoubleDown, edit, mapMarker, train } from '../icons.js';
 
 class RouteTableCell extends React.Component {
   constructor(props) {
@@ -20,9 +25,6 @@ class RouteTableCell extends React.Component {
     };
 
     this.load = this.load.bind(this);
-
-    this.renderSpecsView = this.renderSpecsView.bind(this);
-    this.renderSettingsView = this.renderSettingsView.bind(this);
     this.renderTrain = this.renderTrain.bind(this);
   }
 
@@ -54,78 +56,19 @@ class RouteTableCell extends React.Component {
       .done();
   }
 
-  renderSpecsView() {
-    const { from, to, preferredTrain } = this.props.route;
-
-    let preferredTrainRow;
-    if (preferredTrain) {
-      preferredTrainRow = (
-        <View style={styles.headerRow}>
-          <FontAwesome style={[styles.specsIcon, styles.headerPreferredTrain]}>
-            {train}
-          </FontAwesome>
-          <Text style={styles.specsText}>
-            {preferredTrain}
-          </Text>
-        </View>
-      );
-    }
-
-    return (
-      <View style={styles.header}>
-        <View style={styles.headerRow}>
-          <FontAwesome style={[styles.specsIcon, styles.headerFrom]}>
-            {angleDoubleDown}
-          </FontAwesome>
-          <Text style={styles.specsText}>
-            {from.toUpperCase()}
-          </Text>
-        </View>
-        <View style={styles.headerRow}>
-          <FontAwesome style={[styles.specsIcon, styles.headerTo]}>
-            {mapMarker}
-          </FontAwesome>
-          <Text style={styles.specsText}>
-            {to.toUpperCase()}
-          </Text>
-        </View>
-        {preferredTrainRow}
-      </View>
-    );
-  }
-
-  renderSettingsView() {
-    return (
-      <View style={[styles.header, styles.settings]}>
-        <TouchableHighlight
-          onPress={this.props.editRoute}
-          underlayColor="white">
-          <FontAwesome style={styles.settingsImage}>{edit}</FontAwesome>
-        </TouchableHighlight>
-        <TouchableHighlight
-          onPress={this.props.deleteRoute}
-          underlayColor="white">
-          <FontAwesome style={styles.settingsImage}>{cross}</FontAwesome>
-        </TouchableHighlight>
-      </View>
-    );
-  }
-
   renderTrain({ item }) {
     return (
       <RouteStatusView
         status={item}
         preferredTrain={this.props.route.preferredTrain}
-        style={styles.card} />
+        style={card} />
     );
   }
 
   render() {
     return (
-      <View style={[styles.row, fullWidth]}>
-        <View style={styles.card}>
-          {this.renderSpecsView()}
-        </View>
+      <View style={fullWidth}>
+        <RouteTableHeader route={this.props.route} />
         <FlatList
           style={[container, fullWidth]}
           data={this.state.statuses}
@@ -139,74 +82,6 @@ class RouteTableCell extends React.Component {
 const styles = StyleSheet.create({
   row: {
     margin: StyleSheet.hairlineWidth,
-  },
-
-  card: {
-    flexDirection: 'row',
-
-    backgroundColor: '#ffffff',
-
-    margin: 12,
-  },
-
-  header: {
-    padding: 12,
-  },
-
-  headerRow: {
-    flexDirection: 'row',
-
-    paddingTop: 10,
-    paddingRight: 5,
-    paddingBottom: 10,
-    paddingLeft: 5,
-  },
-
-  headerFrom: {
-    color: 'green',
-  },
-
-  headerTo: {
-    color: 'red',
-  },
-
-  headerPreferredTrain: {
-    color: 'rgba(19, 117, 179, 0.5)',
-  },
-
-  specsIcon: {
-    paddingRight: 5,
-
-    width: 40,
-
-    textAlign: 'center',
-    fontSize: 24,
-  },
-
-  specsText: {
-    paddingLeft: 5,
-    paddingRight: 5,
-
-    fontSize: 18,
-    textAlign: 'center',
-
-    fontWeight: 'bold',
-    color: '#000000',
-  },
-
-  settings: {
-    position: 'absolute',
-    right: 0,
-
-    flexDirection: 'row',
-
-    marginTop: 4,
-  },
-  settingsImage: {
-    height: 14,
-    width: 14,
-    marginLeft: 5,
-    marginRight: 5,
   },
 });
 
