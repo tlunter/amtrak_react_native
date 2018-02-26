@@ -1,19 +1,16 @@
 'use strict';
 import React from 'react';
-import { Image, StyleSheet, Text, TouchableHighlight, View } from 'react-native';
+import { StyleSheet, Text, TouchableHighlight, View } from 'react-native';
+import FontAwesome from './font_awesome.js';
+import Icons from '../icons.js';
 
 class RightHeaderButton extends React.Component {
-  static defaultProps = {
-    right: true,
-    left: false
-  }
-
   constructor(props) {
     super(props);
 
     this.onTap = this.onTap.bind(this);
     this.renderText = this.renderText.bind(this);
-    this.renderImage = this.renderImage.bind(this);
+    this.renderIcon = this.renderIcon.bind(this);
   }
 
   onTap() {
@@ -30,8 +27,12 @@ class RightHeaderButton extends React.Component {
     );
   }
 
-  renderImage() {
-    return <Image style={[styles.image, this.props.style]} source={this.props.source} />;
+  renderIcon() {
+    return (
+      <FontAwesome style={[styles.icon, this.props.style]}>
+        {Icons[this.props.source]}
+      </FontAwesome>
+    );
   }
 
   render() {
@@ -41,7 +42,7 @@ class RightHeaderButton extends React.Component {
         underlayColor='rgba(0,0,0,0.0);'
         onPress={this.onTap}
         style={styles.right}>
-        {this.props.text ? this.renderText() : this.renderImage()}
+        {this.props.text ? this.renderText() : this.renderIcon()}
       </TouchableHighlight>
     );
   }
@@ -54,10 +55,12 @@ const styles = StyleSheet.create({
     alignItems: 'flex-start',
     justifyContent: 'center',
   },
-  image: {
-    height: 38,
-    width: 38,
-    tintColor: '#ffffff',
+  icon: {
+    color: '#ffffff',
+    backgroundColor:  'transparent',
+    fontSize: 24,
+    textAlign: 'center',
+    textAlignVertical: 'center',
   },
   textView: {
     padding: 3,

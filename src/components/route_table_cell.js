@@ -1,19 +1,19 @@
 'use strict';
 
 import React from 'react';
-import { Image, StyleSheet, Text, TouchableHighlight, View } from 'react-native';
+import { FlatList, Image, StyleSheet, Text, TouchableHighlight, View } from 'react-native';
 import Network from '../network';
-import RouteView from './route_view.js';
-import icons from '../icons.js';
-const { cross, edit, circleRight } = icons;
+import RouteStatusView from './route_status_view.js';
+import containerStyles from '../styles/container.js';
+const { container, fullWidth } = containerStyles;
+import FontAwesome from './font_awesome.js';
+import { angleDoubleDown, mapMarker, train } from '../icons.js';
 
 class RouteTableCell extends React.Component {
   constructor(props) {
     super(props);
 
     this.state = {
-      settingsExposed: false,
-      routeExposed: false,
       statuses: [],
       timeout: null,
       interval: null
@@ -21,12 +21,9 @@ class RouteTableCell extends React.Component {
 
     this.load = this.load.bind(this);
 
-    this.toggleSettingsExposed = this.toggleSettingsExposed.bind(this);
-    this.toggleRouteExposed = this.toggleRouteExposed.bind(this);
-
     this.renderSpecsView = this.renderSpecsView.bind(this);
     this.renderSettingsView = this.renderSettingsView.bind(this);
-    this.renderRouteRow = this.renderRouteRow.bind(this);
+    this.renderTrain = this.renderTrain.bind(this);
   }
 
   componentDidMount() {
@@ -57,75 +54,83 @@ class RouteTableCell extends React.Component {
       .done();
   }
 
-  toggleSettingsExposed() {
-    this.setState({ settingsExposed: !this.state.settingsExposed });
-  }
-
-  toggleRouteExposed() {
-    this.setState({ routeExposed: !this.state.routeExposed });
-  }
-
   renderSpecsView() {
     const { from, to, preferredTrain } = this.props.route;
-    let preferredTrainText;
 
+    let preferredTrainRow;
     if (preferredTrain) {
-      preferredTrainText = <Text style={styles.specsText}>{' '}({preferredTrain})</Text>;
+      preferredTrainRow = (
+        <View style={styles.headerRow}>
+          <FontAwesome style={[styles.specsIcon, styles.headerPreferredTrain]}>
+            {train}
+          </FontAwesome>
+          <Text style={styles.specsText}>
+            {preferredTrain}
+          </Text>
+        </View>
+      );
     }
 
     return (
-      <TouchableHighlight
-        style={[styles.header, styles.specs]}
-        onPress={this.toggleRouteExposed}
-        onLongPress={this.toggleSettingsExposed}
-        underlayColor="white">
-        <View style={styles.specsView}>
-          <Text style={styles.specsText}>{from.toUpperCase()}</Text>
-          <Image style={styles.arrowImage} source={{uri: circleRight}} />
-          <Text style={styles.specsText}>{to.toUpperCase()}</Text>
-          {preferredTrainText}
+      <View style={styles.header}>
+        <View style={styles.headerRow}>
+          <FontAwesome style={[styles.specsIcon, styles.headerFrom]}>
+            {angleDoubleDown}
+          </FontAwesome>
+          <Text style={styles.specsText}>
+            {from.toUpperCase()}
+          </Text>
         </View>
-      </TouchableHighlight>
+        <View style={styles.headerRow}>
+          <FontAwesome style={[styles.specsIcon, styles.headerTo]}>
+            {mapMarker}
+          </FontAwesome>
+          <Text style={styles.specsText}>
+            {to.toUpperCase()}
+          </Text>
+        </View>
+        {preferredTrainRow}
+      </View>
     );
   }
 
   renderSettingsView() {
-    if (this.state.settingsExposed) {
-      return (
-        <View style={[styles.header, styles.settings]}>
-          <TouchableHighlight
-            onPress={this.props.editRoute}
-            underlayColor="white">
-            <Image style={styles.settingsImage} source={{uri: edit}} />
-          </TouchableHighlight>
-          <TouchableHighlight
-            onPress={this.props.deleteRoute}
-            underlayColor="white">
-            <Image style={styles.settingsImage} source={{uri: cross}} />
-          </TouchableHighlight>
-        </View>
-      );
-    }
+    return (
+      <View style={[styles.header, styles.settings]}>
+        <TouchableHighlight
+          onPress={this.props.editRoute}
+          underlayColor="white">
+          <FontAwesome style={styles.settingsImage}>{edit}</FontAwesome>
+        </TouchableHighlight>
+        <TouchableHighlight
+          onPress={this.props.deleteRoute}
+          underlayColor="white">
+          <FontAwesome style={styles.settingsImage}>{cross}</FontAwesome>
+        </TouchableHighlight>
+      </View>
+    );
   }
 
-  renderRouteRow() {
-    if (this.state.routeExposed) {
-      return (
-        <RouteView
-          statuses={this.state.statuses}
-          preferredTrain={this.props.route.preferredTrain} />
-      );
-    }
+  renderTrain({ item }) {
+    return (
+      <RouteStatusView
+        status={item}
+        preferredTrain={this.props.route.preferredTrain}
+        style={styles.card} />
+    );
   }
 
   render() {
     return (
-      <View style={styles.row} ref="rowView">
-        <View style={styles.headerRow}>
+      <View style={[styles.row, fullWidth]}>
+        <View style={styles.card}>
           {this.renderSpecsView()}
-          {this.renderSettingsView()}
         </View>
-        {this.renderRouteRow()}
+        <FlatList
+          style={[container, fullWidth]}
+          data={this.state.statuses}
+          renderItem={this.renderTrain}
+          keyExtractor={(item, index) => item.number.toString()} />
       </View>
     );
   }
@@ -134,25 +139,54 @@ class RouteTableCell extends React.Component {
 const styles = StyleSheet.create({
   row: {
     margin: StyleSheet.hairlineWidth,
+  },
+
+  card: {
+    flexDirection: 'row',
 
     backgroundColor: '#ffffff',
+
+    margin: 12,
+  },
+
+  header: {
+    padding: 12,
   },
 
   headerRow: {
     flexDirection: 'row',
+
+    paddingTop: 10,
+    paddingRight: 5,
+    paddingBottom: 10,
+    paddingLeft: 5,
   },
 
-  header: {
-    padding: 10,
+  headerFrom: {
+    color: 'green',
   },
-  specs: {
-    flex: 1,
+
+  headerTo: {
+    color: 'red',
   },
-  specsView: {
-    flexDirection: 'row',
+
+  headerPreferredTrain: {
+    color: 'rgba(19, 117, 179, 0.5)',
   },
+
+  specsIcon: {
+    paddingRight: 5,
+
+    width: 40,
+
+    textAlign: 'center',
+    fontSize: 24,
+  },
+
   specsText: {
-    flex: 0,
+    paddingLeft: 5,
+    paddingRight: 5,
+
     fontSize: 18,
     textAlign: 'center',
 
@@ -173,14 +207,6 @@ const styles = StyleSheet.create({
     width: 14,
     marginLeft: 5,
     marginRight: 5,
-  },
-
-  arrowImage: {
-    marginTop: 4,
-    marginLeft: 10,
-    marginRight: 10,
-    height: 14,
-    width: 14,
   },
 });
 

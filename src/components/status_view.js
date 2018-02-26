@@ -1,5 +1,10 @@
 import React from 'react';
-import { StyleSheet, View, ListView } from 'react-native';
+import {
+  FlatList,
+  Platform,
+  StyleSheet,
+  View
+} from 'react-native';
 import RightHeaderButton from './right_header_button.js';
 import RouteTableCell from './route_table_cell.js';
 import Route from '../models/routes.js';
@@ -14,7 +19,7 @@ class StatusView extends React.Component {
       title: 'Amtrak Status',
       headerRight: (
         <RightHeaderButton
-          source={{uri: plus}}
+          source='plus'
           onTap={params.addRoute}
           style={{ height: 26, width: 26 }} />
       ),
@@ -24,8 +29,7 @@ class StatusView extends React.Component {
   constructor(props) {
     super(props);
 
-    const lv = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
-    this.state = { routes: lv.cloneWithRows([]) };
+    this.state = { routes: [] };
 
     this.load = this.load.bind(this);
     this._addRoute = this._addRoute.bind(this);
@@ -52,7 +56,7 @@ class StatusView extends React.Component {
     Route.all()
       .then((routes) => {
         console.log('Load Routes:', JSON.stringify(routes));
-        this.setState({ routes: this.state.routes.cloneWithRows(routes) });
+        this.setState({ routes: routes });
       })
       .done();
   }
@@ -71,25 +75,26 @@ class StatusView extends React.Component {
     route.remove().then(this.load).done();
   }
 
-  renderPage(route) {
+  renderPage({ item }) {
     return (
       <RouteTableCell
-        key={route.id}
-        route={route}
-        editRoute={this.editRoute.bind(this, route)}
-        deleteRoute={this.deleteRoute.bind(this, route)} />
+        key={item.id}
+        route={item}
+        editRoute={this.editRoute.bind(this, item)}
+        deleteRoute={this.deleteRoute.bind(this, item)} />
     );
   }
 
   render() {
     return (
-      <View style={containerStyles.container}>
-        <ListView
-          dataSource={this.state.routes}
-          renderRow={this.renderPage}
-          style={styles.list}
-          enableEmptySections={true} />
-      </View>
+      <FlatList
+        ref={(component) => this.list = component}
+        data={this.state.routes}
+        renderItem={this.renderPage}
+        keyExtractor={(item, index) => item.id}
+        style={[styles.list, containerStyles.container, containerStyles.fullWidth]}
+        horizontal={true}
+        pagingEnabled={true} />
     );
   }
 };
