@@ -94,7 +94,8 @@ class StatusView extends React.Component {
         keyExtractor={(item, index) => item.id}
         style={[styles.list, containerStyles.container, containerStyles.fullWidth]}
         horizontal={true}
-        pagingEnabled={true} />
+        pagingEnabled={true}
+        keyboardShouldPersistTaps="always" />
     );
   }
 };

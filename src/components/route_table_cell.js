@@ -68,7 +68,9 @@ class RouteTableCell extends React.Component {
   render() {
     return (
       <View style={fullWidth}>
-        <RouteTableHeader route={this.props.route} />
+        <RouteTableHeader
+          route={this.props.route}
+          onUpdate={this.load} />
         <FlatList
           style={[container, fullWidth]}
           data={this.state.statuses}
