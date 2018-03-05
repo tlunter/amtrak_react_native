@@ -42,12 +42,17 @@ class AutoCompleteInput extends React.Component {
     };
   }
 
-  renderStation({ item }) {
+  renderEmptyCell() {
+    return <Text style={[styles.text, styles.grey]}>No stations match</Text>;
+  }
+
+  renderStation(item) {
     return (
       <TouchableHighlight
         onPress={this.selectStation(item)}
         underlayColor="#f4f7f9"
-        style={styles.item}>
+        style={styles.item}
+        key={item.code}>
         <Text style={styles.text}>{item.autoFillName}</Text>
       </TouchableHighlight>
     );
@@ -62,6 +67,8 @@ class AutoCompleteInput extends React.Component {
   }
 
   onSubmit() {
+    this.textInput.blur();
+
     this.setState(
       { showList: false },
       () => {
@@ -78,23 +85,30 @@ class AutoCompleteInput extends React.Component {
   render() {
     let list;
     if (this.state.showList) {
+      let listItems = this.filteredStations()
+        .slice(0, 10)
+        .map(this.renderStation);
+
+      if (listItems.length === 0) {
+        listItems = this.renderEmptyCell();
+      }
+
       list = (
-        <FlatList
-          data={this.filteredStations()}
-          renderItem={this.renderStation}
-          keyExtractor={(item, index) => item.code}
-          style={styles.list}
-          keyboardShouldPersistTaps="handled" />
+        <View style={styles.list}>
+          {listItems}
+        </View>
       );
     }
 
     return (
       <View style={[styles.container, this.props.style]}>
         <TextInput
+          ref={(component) => this.textInput = component}
           placeholder={this.props.placeholder}
           value={this.state.value}
           style={this.props.textInputStyle}
           returnKeyType='done'
+          underlineColorAndroid='transparent'
           onChangeText={this.onChangeText}
           onSubmitEditing={this.onSubmit}
           onFocus={() => this.setState({ showList: true })} />
@@ -112,12 +126,15 @@ const styles = StyleSheet.create({
   },
 
   list: {
-    maxHeight: 200,
+    flex: 1,
+
+    backgroundColor: '#fff',
   },
 
   item: {
     borderBottomWidth: StyleSheet.hairlineWidth,
     borderBottomColor: '#e3eaef',
+    backgroundColor: '#fff',
   },
 
   text: {
@@ -125,6 +142,11 @@ const styles = StyleSheet.create({
 
     fontSize: 16,
   },
+
+  grey: {
+    color: '#949699',
+    fontStyle: 'italic',
+  }
 });
 
 export default AutoCompleteInput;

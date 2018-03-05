@@ -26,6 +26,8 @@ class RouteTableCell extends React.Component {
 
     this.load = this.load.bind(this);
     this.renderTrain = this.renderTrain.bind(this);
+    this.startEditing = this.startEditing.bind(this);
+    this.stopEditing = this.stopEditing.bind(this);
   }
 
   componentDidMount() {
@@ -56,6 +58,14 @@ class RouteTableCell extends React.Component {
       .done();
   }
 
+  startEditing() {
+    this.setState({ editing: true });
+  }
+
+  stopEditing() {
+    this.setState({ editing: false }, this.load);
+  }
+
   renderTrain({ item }) {
     return (
       <RouteStatusView
@@ -66,16 +76,30 @@ class RouteTableCell extends React.Component {
   }
 
   render() {
+    const header = (
+      <RouteTableHeader
+        route={this.props.route}
+        editing={this.state.editing}
+        startEditing={this.startEditing}
+        stopEditing={this.stopEditing} />
+    );
+
+    let data;
+    if (this.state.editing) {
+      data = [];
+    } else {
+      data = this.state.statuses;
+    }
+
     return (
       <View style={fullWidth}>
-        <RouteTableHeader
-          route={this.props.route}
-          onUpdate={this.load} />
         <FlatList
+          ListHeaderComponent={header}
           style={[container, fullWidth]}
-          data={this.state.statuses}
+          data={data}
           renderItem={this.renderTrain}
-          keyExtractor={(item, index) => item.number.toString()} />
+          keyExtractor={(item, index) => item.number.toString()}
+          keyboardShouldPersistTaps="always" />
       </View>
     );
   }

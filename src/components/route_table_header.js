@@ -1,5 +1,13 @@
 import React from 'react';
-import { Button, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import {
+  Button,
+  Platform,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View
+} from 'react-native';
 
 import AutoCompleteInput from './auto_complete_input.js';
 import Stations from '../models/stations.js';
@@ -14,27 +22,23 @@ class RouteTableHeader extends React.Component {
   constructor(props) {
     super(props);
 
-    this.state = { editing: false, route: props.route };
-
-    this.editRoute = this.editRoute.bind(this);
     this.renderEditButton = this.renderEditButton.bind(this);
     this.updateRouteProperty = this.updateRouteProperty.bind(this);
     this.saveRoute = this.saveRoute.bind(this);
   }
 
-  editRoute() {
-    this.setState({ editing: true });
+  componentWillReceiveProps(nextProps) {
+    this.setState({ route: nextProps.route });
   }
 
   renderEditButton() {
-    if (this.state.editing) {
+    if (this.props.editing) {
       return;
     }
 
     return (
       <View style={styles.editView}>
-        <TouchableOpacity
-          onPress={this.editRoute}>
+        <TouchableOpacity onPress={this.props.startEditing}>
           <FontAwesome style={styles.editButton}>{edit}</FontAwesome>
         </TouchableOpacity>
       </View>
@@ -57,16 +61,15 @@ class RouteTableHeader extends React.Component {
 
   saveRoute() {
     this.props.route.update(this.state.route)
-      .then(() => {
-        this.setState({ editing: false }, this.props.onUpdate);
-      });
+      .then(this.props.stopEditing);
   }
 
-  renderSpecsView(route) {
-    const { from, to, preferredTrain } = route;
+  renderSpecsView() {
+    const { editing } = this.props;
+    const { from, to, preferredTrain } = (editing) ? this.state.route : this.props.route;
 
     let fromCell, toCell, preferredTrainCell, saveCell;
-    if (this.state.editing) {
+    if (editing) {
       fromCell = (
         <AutoCompleteInput
           style={styles.autoCompleteStyle}
@@ -87,13 +90,16 @@ class RouteTableHeader extends React.Component {
         <TextInput
           placeholder="Preferred Train Number"
           value={preferredTrain}
-          style={styles.textInput}
+          style={[styles.textInput, styles.preferredTrainTextInput]}
           returnKeyType='done'
-          onChangeText={this.updateRouteProperty('preferredTrain')} />
+          underlineColorAndroid='transparent'
+          onChangeText={this.updateRouteProperty('preferredTrain')}
+          keyboardType='numeric' />
       );
       saveCell = (
         <View style={styles.headerRow}>
-          <Button title="Save" onPress={this.saveRoute} />
+          <View style={styles.leftButton}><Button title="Save" onPress={this.saveRoute} /></View>
+          <Button title="Cancel" onPress={this.props.stopEditing} />
         </View>
       );
     } else {
@@ -109,7 +115,7 @@ class RouteTableHeader extends React.Component {
     }
 
     let preferredTrainRow;
-    if (preferredTrain || this.state.editing) {
+    if (preferredTrain || editing) {
       preferredTrainRow = (
         <View style={styles.headerRow}>
           <FontAwesome style={[styles.specsIcon, styles.headerPreferredTrain]}>
@@ -143,7 +149,7 @@ class RouteTableHeader extends React.Component {
   render() {
     return (
       <View style={[card, { flexDirection: 'row' }]}>
-        {this.renderSpecsView(this.state.route)}
+        {this.renderSpecsView()}
         {this.renderEditButton()}
       </View>
     )
@@ -185,7 +191,7 @@ const styles = StyleSheet.create({
     width: 40,
 
     textAlign: 'center',
-    fontSize: 24,
+    fontSize: 16,
   },
 
   specsText: {
@@ -196,10 +202,10 @@ const styles = StyleSheet.create({
     paddingLeft: 5,
     paddingRight: 5,
 
-    fontSize: 18,
+    fontSize: 14,
     textAlign: 'left',
 
-    fontWeight: 'bold',
+    //fontWeight: 'bold',
     color: '#000000',
   },
 
@@ -214,23 +220,34 @@ const styles = StyleSheet.create({
     paddingLeft: 5,
     paddingRight: 5,
 
-    fontSize: 18,
+    fontSize: 14,
     textAlign: 'left',
 
-    fontWeight: 'bold',
+    //fontWeight: 'bold',
     color: '#000000',
+  },
+
+  preferredTrainTextInput: {
+    flex: 1,
+    marginRight: 40,
   },
 
   editView: {
     position: 'absolute',
     right: 0,
+    bottom: 0,
 
     padding: 20,
   },
 
   editButton: {
-    fontSize: 20,
+    fontSize: 16,
     color: '#b6bec6',
+  },
+
+  leftButton: {
+    marginLeft: 40,
+    marginRight: 10,
   }
 });
 

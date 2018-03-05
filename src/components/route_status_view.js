@@ -15,7 +15,7 @@ class RouteStatusView extends React.Component {
       console.log(`Estimated: ${status.departure.estimated_time}`);
       estimatedText = <Text style={styles.trainEstimated}>{status.departure.estimated_time.trim()}</Text>
     } else {
-      estimatedText = <Text style={[styles.trainEstimated, styles.missingEstimation]}>Soon</Text>
+      estimatedText = <Text style={[styles.trainEstimated, styles.missingEstimation]}>N/A</Text>
     }
 
 
@@ -54,13 +54,13 @@ var styles = StyleSheet.create({
     paddingTop: 10,
 
     fontWeight: 'bold',
-    fontSize: 20,
+    fontSize: 14,
     color: '#000000',
   },
   trainScheduled: {
     paddingBottom: 10,
 
-    fontSize: 20,
+    fontSize: 14,
     color: '#000000',
   },
   trainEstimated: {
@@ -69,12 +69,12 @@ var styles = StyleSheet.create({
     paddingBottom: 10,
     paddingLeft: 5,
 
-    fontSize: 28,
+    fontSize: 20,
     textAlign: 'left',
     color: '#000000',
   },
   estimatedView: {
-    width: 140,
+    width: 110,
   },
   missingEstimation: {
     color: 'orange',

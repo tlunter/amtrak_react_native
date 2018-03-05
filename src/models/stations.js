@@ -1,16 +1,33 @@
 import stations from '../stations.json';
 
-export default class Stations {
+const stationsByCode = stations.reduce(
+  (acc, station) => {
+    acc[station.code.toLowerCase()] = station;
+    return acc;
+  },
+  {}
+);
+
+const stationsByName = stations.reduce(
+  (acc, station) => {
+    acc[station.autoFillName.toLowerCase()] = station;
+    return acc;
+  },
+  {}
+);
+
+class Stations {
   static findByCode(code) {
-    return stations.find(station => station.code.toLowerCase() === code.toLowerCase());
+    return stationsByCode[code.trim().toLowerCase()];
   }
 
   static filter(searchString) {
-    const value = searchString.toLowerCase();
+    const value = searchString.trim().toLowerCase();
 
-    return stations.filter(station => {
-      const stationName = station.autoFillName.toLowerCase();
-      return stationName.indexOf(value) > -1;
-    });
+    return Object.entries(stationsByName)
+      .filter(([name, station]) => name.includes(value))
+      .map(([name, station]) => station);
   }
 }
+
+export default Stations;

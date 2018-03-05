@@ -5,6 +5,8 @@ export default StyleSheet.create({
     flexDirection: 'row',
 
     backgroundColor: '#ffffff',
+    borderColor: '#ced4dd',
+    borderWidth: StyleSheet.hairlineWidth,
 
     margin: 12,
   },

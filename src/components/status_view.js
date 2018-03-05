@@ -102,7 +102,7 @@ class StatusView extends React.Component {
 
 const styles = StyleSheet.create({
   list: {
-    backgroundColor: '#eeeeee',
+    backgroundColor: '#e6e8ed',
   }
 });
 
