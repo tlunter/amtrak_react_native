@@ -29,7 +29,7 @@ class StatusView extends React.Component {
   constructor(props) {
     super(props);
 
-    this.state = { routes: [], adding: false, addedNew: false };
+    this.state = { routes: [], adding: false };
 
     this.load = this.load.bind(this);
     this.addRoute = this.addRoute.bind(this);
@@ -58,17 +58,10 @@ class StatusView extends React.Component {
         setTimeout(() => this.list.scrollToEnd(), 20);
       });
     } else if (prevState.adding && !this.state.adding) {
-      if (this.state.addedNew) {
-        this.load().then(() => {
-          console.log("Scroll to end");
-          setTimeout(() => this.list.scrollToEnd(), 20);
-        });
-      } else {
-        this.load().then(() => {
-          console.log("Scroll to beginning");
-          setTimeout(() => this.list.scrollToEnd(), 20);
-        });
-      }
+      this.load().then(() => {
+        console.log("Scroll to end");
+        setTimeout(() => this.list.scrollToEnd(), 20);
+      });
     }
   }
 
@@ -90,10 +83,14 @@ class StatusView extends React.Component {
     return ({ value, remove }) => {
       if (remove && this.state.adding) {
         return new Promise((resolve, reject) => {
-          this.setState({ adding: false, addedNew: false }, resolve);
+          this.setState({ adding: false }, resolve);
         });
       } else if (remove) {
         return route.remove().then(this.load);
+      } else if (value && this.state.adding) {
+        return route.update(value)
+          .then(this.load)
+          .then(() => this.setState({ adding: false }));
       } else if (value) {
         return route.update(value).then(this.load);
       }

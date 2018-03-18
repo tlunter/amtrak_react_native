@@ -110,9 +110,13 @@ class RouteTableHeader extends React.PureComponent {
       );
       saveCell = (
         <View style={styles.headerRow}>
-          <View style={styles.leftButton}><Button title="Save" onPress={this.saveRoute} /></View>
+          <View style={styles.leftButton}>
+            <Button title="Save" onPress={this.saveRoute} />
+          </View>
           <Button title="Cancel" onPress={this.cancelSaveRoute} />
-          <Button title="Remove" onPress={this.removeRoute} />
+          <View style={styles.removeButton}>
+            <Button title="Remove" color="#ff3b30" onPress={this.removeRoute} />
+          </View>
         </View>
       );
     } else {
@@ -199,9 +203,9 @@ const styles = StyleSheet.create({
   },
 
   specsIcon: {
-    paddingRight: 5,
+    paddingRight: 20,
 
-    width: 40,
+    width: 20,
 
     textAlign: 'center',
     fontSize: 16,
@@ -210,20 +214,16 @@ const styles = StyleSheet.create({
   specsText: {
     flex: 1,
 
-    marginRight: 40,
-
     paddingLeft: 5,
     paddingRight: 5,
 
     fontSize: 14,
     textAlign: 'left',
 
-    //fontWeight: 'bold',
     color: '#000000',
   },
 
   autoCompleteStyle: {
-    marginRight: 40,
   },
 
   textInput: {
@@ -232,17 +232,16 @@ const styles = StyleSheet.create({
 
     paddingLeft: 5,
     paddingRight: 5,
+    paddingBottom: 5,
 
     fontSize: 14,
     textAlign: 'left',
 
-    //fontWeight: 'bold',
     color: '#000000',
   },
 
   preferredTrainTextInput: {
     flex: 1,
-    marginRight: 40,
   },
 
   editView: {
@@ -259,8 +258,11 @@ const styles = StyleSheet.create({
   },
 
   leftButton: {
-    marginLeft: 40,
     marginRight: 10,
+  },
+
+  removeButton: {
+    marginLeft: 'auto',
   }
 });
 
