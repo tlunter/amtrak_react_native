@@ -29,6 +29,7 @@ class RouteTableCell extends React.Component {
 
     this.load = this.load.bind(this);
     this.renderTrain = this.renderTrain.bind(this);
+    this.renderEmptyItem = this.renderEmptyItem.bind(this);
     this.startEditing = this.startEditing.bind(this);
     this.updateRoute = this.updateRoute.bind(this);
   }
@@ -96,6 +97,18 @@ class RouteTableCell extends React.Component {
     );
   }
 
+  renderEmptyItem() {
+    if (this.state.editing) {
+      return null;
+    }
+
+    return (
+      <View style={styles.emptyItem}>
+        <Text style={styles.emptyItemText}>No trains found!</Text>
+      </View>
+    );
+  }
+
   render() {
     const { route } = this.props;
     const header = (
@@ -117,6 +130,7 @@ class RouteTableCell extends React.Component {
       <View style={fullWidth}>
         <FlatList
           ListHeaderComponent={header}
+          ListEmptyComponent={this.renderEmptyItem}
           style={[container, fullWidth]}
           refreshing={this.state.refreshing}
           onRefresh={this.load}
@@ -133,6 +147,18 @@ const styles = StyleSheet.create({
   row: {
     margin: StyleSheet.hairlineWidth,
   },
+
+  emptyItem: {
+    alignItems: 'center',
+
+    margin: 12,
+  },
+
+  emptyItemText: {
+    fontStyle: 'italic',
+
+    fontSize: 20,
+  }
 });
 
 export default RouteTableCell;

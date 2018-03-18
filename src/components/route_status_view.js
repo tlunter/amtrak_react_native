@@ -48,7 +48,7 @@ var styles = StyleSheet.create({
   highlightedTrain: {
     flex: 1,
     flexDirection: 'row',
-    backgroundColor: 'rgba(19, 117, 179, 0.5)',
+    backgroundColor: '#87aecd',
   },
   trainNumber: {
     paddingTop: 10,
@@ -77,7 +77,7 @@ var styles = StyleSheet.create({
     width: 110,
   },
   missingEstimation: {
-    color: 'orange',
+    color: '#7a7b7c',
   }
 });
 
