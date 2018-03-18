@@ -20,6 +20,7 @@ class RouteTableCell extends React.Component {
 
     this.state = {
       statuses: [],
+      refreshing: false,
       timeout: null,
       interval: null,
       editing: props.route.new,
@@ -53,6 +54,7 @@ class RouteTableCell extends React.Component {
 
   load() {
     const route = this.props.route;
+    this.setState({ refreshing: true });
     Network.get(`http://amtrak.tlunter.com/api/${route.from}/${route.to}.json`)
       .then((response) => {
         if (response instanceof TypeError) {
@@ -62,7 +64,7 @@ class RouteTableCell extends React.Component {
         }
       })
       .then((data) => {
-        this.setState({ statuses: data });
+        this.setState({ statuses: data, refreshing: false });
       })
       .done();
   }
@@ -116,6 +118,8 @@ class RouteTableCell extends React.Component {
         <FlatList
           ListHeaderComponent={header}
           style={[container, fullWidth]}
+          refreshing={this.state.refreshing}
+          onRefresh={this.load}
           data={data}
           renderItem={this.renderTrain}
           keyExtractor={(item, index) => `${route.id}-${item.number.toString()}-${index}`}
