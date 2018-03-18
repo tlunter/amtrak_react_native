@@ -81,7 +81,7 @@ class RouteTableCell extends React.Component {
     // Updating route
     } else if (value) {
       this.props.updateRoute({ value })
-        .then(() => this.setState({ editing: false }));
+        .then(() => this.setState({ editing: false }, this.load));
     }
   }
 
