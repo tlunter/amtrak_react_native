@@ -3,7 +3,7 @@
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
-class RouteStatusView extends React.Component {
+class RouteStatusView extends React.PureComponent {
   render() {
     const { preferredTrain, status, style } = this.props;
 

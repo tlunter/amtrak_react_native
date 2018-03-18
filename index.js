@@ -10,7 +10,6 @@ StatusBar.setBackgroundColor('#1375b3');
 let AmtrakStatus = StackNavigator(
   {
     StatusView: { screen: StatusView },
-    AddRouteForm: { screen: AddRouteForm },
   },
   {
     navigationOptions: {

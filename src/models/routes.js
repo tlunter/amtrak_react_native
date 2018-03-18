@@ -28,9 +28,10 @@ class Route {
     if (!attributes) throw new MissingAttributesError();
 
     this.id = attributes.id || genUUID();
-    this.from = attributes.from;
-    this.to = attributes.to;
+    this.from = attributes.from || "";
+    this.to = attributes.to || "";
     this.preferredTrain = attributes.preferredTrain;
+    this.new = attributes.new || false;
   }
 
   properties() {
@@ -52,6 +53,7 @@ class Route {
         } else {
           routes.push(this.properties());
         }
+        this.new = false;
         return storeRoutes(routes);
       })
       .catch((err) => {
@@ -72,14 +74,13 @@ class Route {
 
   update(attributes) {
     const { from, to, preferredTrain } = attributes;
-    return this.remove()
-      .then(() => {
-        this.from = from;
-        this.to = to;
-        this.preferredTrain = preferredTrain;
 
-        return this.save();
-      })
+    this.from = from;
+    this.to = to;
+    this.preferredTrain = preferredTrain;
+    this.new = false;
+
+    return this.save()
       .catch((err) => {
         console.log(err);
       });

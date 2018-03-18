@@ -21,13 +21,15 @@ class RouteTableCell extends React.Component {
     this.state = {
       statuses: [],
       timeout: null,
-      interval: null
+      interval: null,
+      editing: props.route.new,
+      new: props.route.new,
     };
 
     this.load = this.load.bind(this);
     this.renderTrain = this.renderTrain.bind(this);
     this.startEditing = this.startEditing.bind(this);
-    this.stopEditing = this.stopEditing.bind(this);
+    this.updateRoute = this.updateRoute.bind(this);
   }
 
   componentDidMount() {
@@ -40,6 +42,13 @@ class RouteTableCell extends React.Component {
   componentWillUnmount() {
     clearTimeout(this.state.timeout);
     clearInterval(this.state.interval);
+  }
+
+  componentWillReceiveProps(nextProps) {
+    if (this.state.new && !nextProps.route.new) {
+      this.setState({ new: false });
+      this.load();
+    }
   }
 
   load() {
@@ -62,8 +71,18 @@ class RouteTableCell extends React.Component {
     this.setState({ editing: true });
   }
 
-  stopEditing() {
-    this.setState({ editing: false }, this.load);
+  updateRoute({ value, cancel, remove }) {
+    // Cancelled editing existing
+    if (cancel && !this.state.new) {
+      this.setState({ editing: false });
+    // Cancelled new or removed
+    } else if (cancel || remove) {
+      this.props.updateRoute({ remove: true });
+    // Updating route
+    } else if (value) {
+      this.props.updateRoute({ value })
+        .then(() => this.setState({ editing: false }));
+    }
   }
 
   renderTrain({ item }) {
@@ -76,12 +95,13 @@ class RouteTableCell extends React.Component {
   }
 
   render() {
+    const { route } = this.props;
     const header = (
       <RouteTableHeader
-        route={this.props.route}
+        route={route}
         editing={this.state.editing}
         startEditing={this.startEditing}
-        stopEditing={this.stopEditing} />
+        updateRoute={this.updateRoute} />
     );
 
     let data;
@@ -98,7 +118,7 @@ class RouteTableCell extends React.Component {
           style={[container, fullWidth]}
           data={data}
           renderItem={this.renderTrain}
-          keyExtractor={(item, index) => item.number.toString()}
+          keyExtractor={(item, index) => `${route.id}-${item.number.toString()}-${index}`}
           keyboardShouldPersistTaps="always" />
       </View>
     );

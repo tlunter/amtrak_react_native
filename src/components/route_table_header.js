@@ -18,13 +18,18 @@ import { angleDoubleDown, edit, mapMarker, train } from '../icons.js';
 import routeTableStyles from '../styles/route_table.js';
 const { card } = routeTableStyles;
 
-class RouteTableHeader extends React.Component {
+class RouteTableHeader extends React.PureComponent {
   constructor(props) {
     super(props);
 
+    this.state = { route: props.route };
+
     this.renderEditButton = this.renderEditButton.bind(this);
     this.updateRouteProperty = this.updateRouteProperty.bind(this);
+
     this.saveRoute = this.saveRoute.bind(this);
+    this.cancelSaveRoute = this.cancelSaveRoute.bind(this);
+    this.removeRoute = this.removeRoute.bind(this);
   }
 
   componentWillReceiveProps(nextProps) {
@@ -60,8 +65,15 @@ class RouteTableHeader extends React.Component {
   }
 
   saveRoute() {
-    this.props.route.update(this.state.route)
-      .then(this.props.stopEditing);
+    this.props.updateRoute({ value: this.state.route });
+  }
+
+  cancelSaveRoute() {
+    this.props.updateRoute({ cancel: true });
+  }
+
+  removeRoute() {
+    this.props.updateRoute({ remove: true });
   }
 
   renderSpecsView() {
@@ -99,7 +111,8 @@ class RouteTableHeader extends React.Component {
       saveCell = (
         <View style={styles.headerRow}>
           <View style={styles.leftButton}><Button title="Save" onPress={this.saveRoute} /></View>
-          <Button title="Cancel" onPress={this.props.stopEditing} />
+          <Button title="Cancel" onPress={this.cancelSaveRoute} />
+          <Button title="Remove" onPress={this.removeRoute} />
         </View>
       );
     } else {
