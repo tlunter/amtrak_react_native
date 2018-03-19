@@ -203,7 +203,7 @@ const styles = StyleSheet.create({
   },
 
   specsIcon: {
-    paddingRight: 20,
+    marginRight: 5,
 
     width: 20,
 
