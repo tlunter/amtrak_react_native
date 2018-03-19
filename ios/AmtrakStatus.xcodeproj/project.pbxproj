@@ -1233,7 +1233,7 @@
 					"-ObjC",
 					"-lc++",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.tlunter.AmtrakStatus;
+				PRODUCT_BUNDLE_IDENTIFIER = com.tlunter.amtrak.AmtrakStatus;
 				PRODUCT_NAME = AmtrakStatus;
 				VERSIONING_SYSTEM = "apple-generic";
 			};
@@ -1252,7 +1252,7 @@
 					"-ObjC",
 					"-lc++",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.tlunter.AmtrakStatus;
+				PRODUCT_BUNDLE_IDENTIFIER = com.tlunter.amtrak.AmtrakStatus;
 				PRODUCT_NAME = AmtrakStatus;
 				VERSIONING_SYSTEM = "apple-generic";
 			};
