@@ -1,4 +1,4 @@
-package com.amtrakstatus;
+package com.tlunter.amtrak;
 
 import com.facebook.react.ReactActivity;
 

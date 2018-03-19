@@ -1,3 +1,9 @@
+ext.react = [
+    entryFile: "index.js",
+    bundleInRelease: true,
+    resourcesDirRelease: "src/release/res"
+]
+apply from: "../react.gradle" /*Check file for more information*/
 apply plugin: "com.android.application"
 
 import com.android.build.OutputFile
@@ -76,7 +82,7 @@ project.ext.react = [
     entryFile: "index.js"
 ]
 
-apply from: "../../node_modules/react-native/react.gradle"
+//apply from: "../../node_modules/react-native/react.gradle"
 
 /**
  * Set this to true to create two separate APKs instead of one:
@@ -99,7 +105,7 @@ android {
     compileSdkVersion 27
 
     defaultConfig {
-        applicationId "com.amtrakstatus"
+        applicationId "com.tlunter.amtrak"
         minSdkVersion 16
         targetSdkVersion 22
         versionCode 4
@@ -125,7 +131,13 @@ android {
         }
     }
     buildTypes {
+        debug {
+            manifestPlaceholders = [excludeUnusedPermissions: "false"]
+        }
+
         release {
+            manifestPlaceholders = [excludeUnusedPermissions: "true"]
+
             minifyEnabled enableProguardInReleaseBuilds
             proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
             signingConfig signingConfigs.release

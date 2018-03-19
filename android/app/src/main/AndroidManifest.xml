@@ -1,23 +1,25 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.amtrakstatus"
+    xmlns:tools="http://schemas.android.com/tools"
+    package="com.tlunter.amtrak"
     android:versionCode="1"
     android:versionName="1.0">
 
     <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW"/>
+    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" tools:remove="${excludeUnusedPermissions}"/>
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" tools:remove="${excludeUnusedPermissions}"/>
 
     <uses-sdk
         android:minSdkVersion="16"
         android:targetSdkVersion="22" />
 
     <application
-      android:name=".MainApplication"
+      android:name="com.tlunter.amtrak.MainApplication"
       android:allowBackup="true"
       android:label="@string/app_name"
       android:icon="@mipmap/ic_launcher"
       android:theme="@style/AppTheme">
       <activity
-        android:name=".MainActivity"
+        android:name="com.tlunter.amtrak.MainActivity"
         android:label="@string/app_name"
         android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
         android:windowSoftInputMode="adjustResize">

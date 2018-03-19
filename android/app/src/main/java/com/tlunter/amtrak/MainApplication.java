@@ -1,4 +1,4 @@
-package com.amtrakstatus;
+package com.tlunter.amtrak;
 
 import android.app.Application;
 

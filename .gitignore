@@ -51,3 +51,6 @@ buck-out/
 */fastlane/report.xml
 */fastlane/Preview.html
 */fastlane/screenshots
+
+android/app/src/*/res/*/reactnative_*.png
+android/app/src/*/res/*/node_modules_*.png
