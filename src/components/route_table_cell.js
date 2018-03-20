@@ -21,6 +21,7 @@ class RouteTableCell extends React.Component {
     this.state = {
       statuses: [],
       refreshing: false,
+      errored: false,
       timeout: null,
       interval: null,
       editing: props.route.new,
@@ -60,12 +61,17 @@ class RouteTableCell extends React.Component {
       .then((response) => {
         if (response instanceof TypeError) {
           throw response;
-        } else {
+        } else if (response.ok) {
           return response.json();
+        } else {
+          return response.text().then((text) => { throw text; });
         }
       })
+      .catch((err) => {
+        this.setState({ errored: true, statuses: [], refreshing: false });
+      })
       .then((data) => {
-        this.setState({ statuses: data, refreshing: false });
+        this.setState({ statuses: data, errored: false, refreshing: false });
       })
       .done();
   }
@@ -102,9 +108,18 @@ class RouteTableCell extends React.Component {
       return null;
     }
 
+    let msg;
+    if (this.state.errored) {
+      msg = "Oh no! Couldn't load results!";
+    } else if (this.state.loading) {
+      msg = "Loading!";
+    } else {
+      msg = "No trains found!";
+    }
+
     return (
       <View style={styles.emptyItem}>
-        <Text style={styles.emptyItemText}>No trains found!</Text>
+        <Text style={styles.emptyItemText}>{msg}</Text>
       </View>
     );
   }

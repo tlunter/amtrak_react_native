@@ -230,6 +230,9 @@ const styles = StyleSheet.create({
     borderBottomWidth: StyleSheet.hairlineWidth,
     borderBottomColor: 'black',
 
+    height: 20,
+
+    paddingVertical: 0,
     paddingLeft: 5,
     paddingRight: 5,
     paddingBottom: 5,
